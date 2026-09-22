@@ -1,0 +1,10 @@
+# db_vector/ NON e' piu' ignorato (23/08): rigenerarlo richiede una chiave API
+# Gemini, che non viene consegnata. Sono ~1 MB: viaggia col repo.
+test_db/
+data/keys.txt
+data/uploads/
+data/temp_audio.wav
+__pycache__/
+*.log
+.rebuild.log
+.server.log

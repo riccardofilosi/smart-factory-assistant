@@ -1,0 +1,15 @@
+# Webapp + assistente LLM — Python 3.11+
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart>=0.0.9
+pydantic>=2
+google-genai>=1.0
+chromadb>=0.5
+openpyxl>=3.1
+pillow>=10
+# solo per main.py (CLI con microfono)
+sounddevice>=0.4
+soundfile>=0.12
+# solo per convert_doc.py (Word -> Markdown)
+mammoth>=1.6
+markdownify>=0.12

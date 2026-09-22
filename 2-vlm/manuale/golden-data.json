@@ -1,0 +1,1615 @@
+[
+  {
+    "id": "F1",
+    "name": "Spia luminosa a pulsante",
+    "difficulty": "facile",
+    "func": "Premi il pulsante → il LED rosso si accende; rilasci → si spegne.",
+    "electrical": "+6V → BTN → R220 → LED → GND",
+    "bom": [
+      {
+        "code": "BTN",
+        "label": "Pulsante tattile 4 pin",
+        "qty": 1
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω",
+        "qty": 1
+      },
+      {
+        "code": "LED-R",
+        "label": "LED rosso 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetti (1 rosso rigido +6V · 1 blu rigido GND)",
+        "qty": 2
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "Pulsante BTN",
+        "kind": "button",
+        "holes": "e5 · e7 · f5 · f7",
+        "coords": [
+          "e5",
+          "e7",
+          "f5",
+          "f7"
+        ],
+        "note": "a cavallo fessura; ingresso e5, uscita f7 (diagonale)"
+      },
+      {
+        "n": 2,
+        "el": "R220",
+        "kind": "resistor",
+        "holes": "g7 – g12",
+        "coords": [
+          "g7",
+          "g12"
+        ],
+        "note": "span 5 colonne; non polarizzata"
+      },
+      {
+        "n": 3,
+        "el": "LED rosso",
+        "kind": "led",
+        "holes": "anodo h12 · catodo h15",
+        "coords": [
+          "h12",
+          "h15"
+        ],
+        "note": "anodo (gamba lunga) verso R220"
+      },
+      {
+        "n": 4,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "d5 → +",
+        "coords": [
+          "d5"
+        ],
+        "note": ""
+      },
+      {
+        "n": 5,
+        "el": "Cavetto blu rigido GND",
+        "kind": "jumper",
+        "holes": "i15 → −",
+        "coords": [
+          "i15"
+        ],
+        "note": ""
+      }
+    ],
+    "collaudo": [
+      "Continuità +6V↔GND a batteria staccata: deve risultare APERTO (no corto).",
+      "Collega batteria 6V (+→rossa, −→blu), interruttore ON.",
+      "Prova: a riposo SPENTO · premuto ACCESO · rilasciato SPENTO.",
+      "Stacca la batteria prima di rimettere le mani."
+    ],
+    "qc_pos": [
+      "BTN a cavallo della fessura su col 5 e 7 (ingresso e5, uscita f7).",
+      "R220 g7 → g12.",
+      "LED anodo h12 (gamba lunga verso R220), catodo h15.",
+      "Cavetto rosso d5 → +; cavetto blu i15 → -."
+    ],
+    "qc_fun": [
+      "A riposo LED spento; premuto LED acceso; rilasciato spento. Commuta netto."
+    ],
+    "defects": [
+      {
+        "code": "DEF-01",
+        "text": "LED invertito → resta spento."
+      },
+      {
+        "code": "DEF-04",
+        "text": "Pulsante ruotato / non a cavallo → sempre acceso o mai."
+      },
+      {
+        "code": "DEF-03",
+        "text": "Gamba non a fondo → non commuta."
+      }
+    ],
+    "complexity": {
+      "pieces": 3,
+      "pins": 6,
+      "pol": 1,
+      "jump": 2
+    }
+  },
+  {
+    "id": "F2",
+    "name": "Semaforo 3 LED",
+    "difficulty": "facile",
+    "func": "Un pulsante accende insieme 3 LED (rosso, giallo, verde).",
+    "electrical": "+6V → BTN → N2 → 3×(R220 → LED) → GND",
+    "bom": [
+      {
+        "code": "BTN",
+        "label": "Pulsante tattile 4 pin",
+        "qty": 1
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω",
+        "qty": 3
+      },
+      {
+        "code": "LED-R",
+        "label": "LED rosso 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "LED-Y",
+        "label": "LED giallo 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "LED-G",
+        "label": "LED verde 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetto rosso rigido +6V",
+        "qty": 1
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "Pulsante BTN",
+        "kind": "button",
+        "holes": "e5 · e7 · f5 · f7",
+        "coords": [
+          "e5",
+          "e7",
+          "f5",
+          "f7"
+        ],
+        "note": "uscita f7 = nodo N2 (col 7)"
+      },
+      {
+        "n": 2,
+        "el": "R220 #1 (rosso)",
+        "kind": "resistor",
+        "holes": "g7 – g15",
+        "coords": [
+          "g7",
+          "g15"
+        ],
+        "note": "parte da N2"
+      },
+      {
+        "n": 3,
+        "el": "R220 #2 (giallo)",
+        "kind": "resistor",
+        "holes": "h7 – h17",
+        "coords": [
+          "h7",
+          "h17"
+        ],
+        "note": "parte da N2"
+      },
+      {
+        "n": 4,
+        "el": "R220 #3 (verde)",
+        "kind": "resistor",
+        "holes": "i7 – i19",
+        "coords": [
+          "i7",
+          "i19"
+        ],
+        "note": "parte da N2"
+      },
+      {
+        "n": 5,
+        "el": "LED rosso",
+        "kind": "led",
+        "holes": "anodo j15 · catodo → −",
+        "coords": [
+          "j15"
+        ],
+        "note": "gamba dritta nel bus −"
+      },
+      {
+        "n": 6,
+        "el": "LED giallo",
+        "kind": "led",
+        "holes": "anodo j17 · catodo → −",
+        "coords": [
+          "j17"
+        ],
+        "note": ""
+      },
+      {
+        "n": 7,
+        "el": "LED verde",
+        "kind": "led",
+        "holes": "anodo j19 · catodo → −",
+        "coords": [
+          "j19"
+        ],
+        "note": ""
+      },
+      {
+        "n": 8,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "d5 → +",
+        "coords": [
+          "d5"
+        ],
+        "note": "alimenta ingresso bottone"
+      }
+    ],
+    "collaudo": [
+      "Continuità +6V↔GND aperta a batteria staccata.",
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "Premi = 3 LED accesi insieme; rilascia = tutti spenti.",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "BTN a cavallo col 5–7; uscita f7.",
+      "3 resistenze partono tutte da col 7 (g7/h7/i7) verso g15/h17/i19.",
+      "LED anodi su j15/j17/j19 (gamba lunga), catodi dritti nel GND − adiacente.",
+      "Cavetto rosso da d5 → +."
+    ],
+    "qc_fun": [
+      "Premuto: tutti e 3 i LED accesi. Se uno resta spento → quel ramo (LED invertito o R non in col7)."
+    ],
+    "defects": [
+      {
+        "code": "DEF-01",
+        "text": "Un LED invertito → solo quello resta spento."
+      },
+      {
+        "code": "DEF-04",
+        "text": "Bottone ruotato/non a cavallo → nessuno si accende."
+      },
+      {
+        "code": "DEF-03",
+        "text": "Gamba resistenza non in colonna corretta → ramo aperto."
+      },
+      {
+        "code": "DEF-02",
+        "text": "Resistenza sbagliata"
+      }
+    ],
+    "complexity": {
+      "pieces": 7,
+      "pins": 14,
+      "pol": 3,
+      "jump": 1
+    }
+  },
+  {
+    "id": "F3",
+    "name": "Dimmer a trimmer",
+    "difficulty": "facile",
+    "func": "Giri il trimmer col giravite e regoli la luminosità del LED blu (pieno → spento).",
+    "electrical": "+6V → trimmer (pin1 → cursore) → R220 → LED blu → GND",
+    "bom": [
+      {
+        "code": "POT",
+        "label": "Trimmer 10 kΩ (3386P)",
+        "qty": 1
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω",
+        "qty": 1
+      },
+      {
+        "code": "LED-B",
+        "label": "LED blu 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetti rosso rigido +6V",
+        "qty": 2
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "Trimmer 10 kΩ",
+        "kind": "trimmer",
+        "holes": "estremi f13 · f15 · cursore g14",
+        "coords": [
+          "f13",
+          "f15",
+          "g14"
+        ],
+        "note": "pin1 (f13) = +6V in · cursore g14 = uscita · f15 libero"
+      },
+      {
+        "n": 2,
+        "el": "R220",
+        "kind": "resistor",
+        "holes": "i14 – i21",
+        "coords": [
+          "i14",
+          "i21"
+        ],
+        "note": "dal cursore (col14) → col21"
+      },
+      {
+        "n": 3,
+        "el": "LED blu",
+        "kind": "led",
+        "holes": "anodo j21 · catodo → −",
+        "coords": [
+          "j21"
+        ],
+        "note": "gamba dritta nel bus −"
+      },
+      {
+        "n": 4,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "i13 → i3",
+        "coords": [
+          "i13",
+          "i3"
+        ],
+        "note": "porta il nodo pin1 (col13) verso col3"
+      },
+      {
+        "n": 5,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "f3 → +",
+        "coords": [
+          "f3"
+        ],
+        "note": "dal col3 al rail +"
+      }
+    ],
+    "collaudo": [
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "LED acceso; giri il giravite → luminosità varia (pieno ↔ spento).",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "Trimmer: pin1 f13, cursore g14, estremo libero f15.",
+      "R220 dal cursore (col14), i14 → i21.",
+      "LED anodo j21, catodo in -.",
+      "+6V al pin1 tramite i due cavetti rigidi i13→i3 e f3→+."
+    ],
+    "qc_fun": [
+      "Ruotando il trimmer la luminosità cambia con continuità (da pieno a spento)."
+    ],
+    "defects": [
+      {
+        "code": "DEF-01",
+        "text": "LED invertito → spento."
+      },
+      {
+        "code": "DEF-04",
+        "text": "R220 non sul cursore (col14) → intensitò luce non regolata."
+      },
+      {
+        "code": "DEF-03",
+        "text": "Pin trimmer non a fondo → circuito aperto."
+      }
+    ],
+    "complexity": {
+      "pieces": 3,
+      "pins": 7,
+      "pol": 1,
+      "jump": 2
+    }
+  },
+  {
+    "id": "F4",
+    "name": "Esposimetro a LDR",
+    "difficulty": "facile",
+    "func": "Più luce sulla LDR → LED verde più luminoso (esposimetro proporzionale).",
+    "electrical": "+6V → LDR → LED verde → R220 → GND",
+    "bom": [
+      {
+        "code": "LDR",
+        "label": "Fotoresistenza CDS-55",
+        "qty": 1
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω",
+        "qty": 1
+      },
+      {
+        "code": "LED-G",
+        "label": "LED verde 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetto blu flessibile GND",
+        "qty": 1
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "LDR (CDS-55)",
+        "kind": "ldr",
+        "holes": "un pin → + · altro pin → e11",
+        "coords": [
+          "e11"
+        ],
+        "note": "non polarizzata; pin dritto nel bus +"
+      },
+      {
+        "n": 2,
+        "el": "LED verde",
+        "kind": "led",
+        "holes": "anodo d11 · catodo d14",
+        "coords": [
+          "d11",
+          "d14"
+        ],
+        "note": "polarizzato"
+      },
+      {
+        "n": 3,
+        "el": "R220",
+        "kind": "resistor",
+        "holes": "b14 – b22",
+        "coords": [
+          "b14",
+          "b22"
+        ],
+        "note": "col14 (catodo) → col22"
+      },
+      {
+        "n": 4,
+        "el": "Cavetto blu flessibile GND",
+        "kind": "jumper",
+        "holes": "e22 → −",
+        "coords": [
+          "e22"
+        ],
+        "note": ""
+      }
+    ],
+    "collaudo": [
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "QC a TORCIA: torcia del telefono sulla LDR → LED nettamente più luminoso; ombra → più fioco.",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "LDR: e11 → +.",
+      "LED anodo d11 (verso LDR), catodo d14.",
+      "R220 b14 → b22.",
+      "Cavetto blu: e22 → -."
+    ],
+    "qc_fun": [
+      "Torcia ON sulla LDR → LED più luminoso; torcia OFF/ombra → più fioco. Delta netto (NON usare 'dito vs luce ambiente')."
+    ],
+    "defects": [
+      {
+        "code": "DEF-01",
+        "text": "LED invertito (polarità) → spento."
+      },
+      {
+        "code": "DEF-03",
+        "text": "Pin LDR non a fondo → circuito aperto."
+      },
+      {
+        "code": "DEF-02",
+        "text": "LED non cambia → LDR o cablaggio."
+      }
+    ],
+    "complexity": {
+      "pieces": 3,
+      "pins": 6,
+      "pol": 1,
+      "jump": 1
+    }
+  },
+  {
+    "id": "F5",
+    "name": "Miscelatore RGB",
+    "difficulty": "facile",
+    "func": "LED RGB a catodo comune: i 3 colori accesi insieme → luce bianca.",
+    "electrical": "ogni anodo → R220 → +6V ; catodo comune → GND",
+    "bom": [
+      {
+        "code": "LED-RGB",
+        "label": "LED RGB 5 mm (catodo comune)",
+        "qty": 1
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω",
+        "qty": 3
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetti (1 rosso rigido +6V · 1 blu flessibile GND)",
+        "qty": 2
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "LED RGB",
+        "kind": "led_rgb",
+        "holes": "a14 (R+) · a15 (catodo comune) · a16 (G+) · a17 (B+)",
+        "coords": [
+          "a14",
+          "a15",
+          "a16",
+          "a17"
+        ],
+        "note": "gamba lunga = catodo comune (col15); R su col14, G su col16, B su col17"
+      },
+      {
+        "n": 2,
+        "el": "R220 (rosso)",
+        "kind": "resistor",
+        "holes": "b6 – b14",
+        "coords": [
+          "b6",
+          "b14"
+        ],
+        "note": ""
+      },
+      {
+        "n": 3,
+        "el": "R220 (verde)",
+        "kind": "resistor",
+        "holes": "c6 – c16",
+        "coords": [
+          "c6",
+          "c16"
+        ],
+        "note": ""
+      },
+      {
+        "n": 4,
+        "el": "R220 (blu)",
+        "kind": "resistor",
+        "holes": "d6 – d17",
+        "coords": [
+          "d6",
+          "d17"
+        ],
+        "note": ""
+      },
+      {
+        "n": 5,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "a6 → +",
+        "coords": [
+          "a6"
+        ],
+        "note": "col6 = bus + comune ai 3 R220"
+      },
+      {
+        "n": 6,
+        "el": "Cavetto blu flessibile GND",
+        "kind": "jumper",
+        "holes": "e15 → −",
+        "coords": [
+          "e15"
+        ],
+        "note": "catodo comune"
+      }
+    ],
+    "collaudo": [
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "Luce bianca (3 colori insieme).",
+      "QC: togli un R220 → sparisce quel colore (individua il ramo).",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "RGB: R+ a14, catodo comune a15 (gamba lunga), G+ a16, B+ a17.",
+      "3 R220 partono da col6 (b6, c6, d6) verso b14/c16/d17 (i 3 anodi).",
+      "Cavetto rosso da a6 → +; blu da e15 → -."
+    ],
+    "qc_fun": [
+      "Batteria → luce bianca. Togliendo un R220 sparisce quel colore."
+    ],
+    "defects": [
+      {
+        "code": "DEF-01",
+        "text": "Catodo/anodo RGB scambiati → spento."
+      },
+      {
+        "code": "DEF-04",
+        "text": "Un R220 non in direzione della gamba corretta → colore assente."
+      },
+      {
+        "code": "DEF-04",
+        "text": "Gamba RGB su colonna sbagliata → colore errato/assente."
+      },
+      {
+        "code": "DEF-02",
+        "text": "Resistenza sbagliata"
+      }
+    ],
+    "complexity": {
+      "pieces": 4,
+      "pins": 10,
+      "pol": 1,
+      "jump": 2
+    }
+  },
+  {
+    "id": "D1",
+    "name": "Allarme acustico a pulsante",
+    "difficulty": "difficile",
+    "func": "Premi il pulsante → suonano insieme buzzer e LED rosso (transistor = interruttore).",
+    "electrical": "+6V → BTN → R5k1 → base ; carichi sul collettore (buzzer − e LED via R220) ; emettitore → GND",
+    "bom": [
+      {
+        "code": "BTN",
+        "label": "Pulsante tattile 4 pin",
+        "qty": 1
+      },
+      {
+        "code": "R5k1",
+        "label": "Resistenza 5.1 kΩ (base)",
+        "qty": 1
+      },
+      {
+        "code": "Q1",
+        "label": "Transistor PN2222 (TO-92)",
+        "qty": 1
+      },
+      {
+        "code": "BUZ-A",
+        "label": "Buzzer attivo",
+        "qty": 1
+      },
+      {
+        "code": "LED-R",
+        "label": "LED rosso 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetti (rosso ×2, verde rigido collettore ×1, blu flessibile ×1)",
+        "qty": 4
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "Pulsante BTN",
+        "kind": "button",
+        "holes": "e2 · e4 · f2 · f4",
+        "coords": [
+          "e2",
+          "e4",
+          "f2",
+          "f4"
+        ],
+        "note": "ingresso col2, uscita col4"
+      },
+      {
+        "n": 2,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "d2 → +",
+        "coords": [
+          "d2"
+        ],
+        "note": "ingresso bottone"
+      },
+      {
+        "n": 3,
+        "el": "R5k1 (base)",
+        "kind": "resistor",
+        "holes": "c4 – c9",
+        "coords": [
+          "c4",
+          "c9"
+        ],
+        "note": "verso la base del transistor (col9)"
+      },
+      {
+        "n": 4,
+        "el": "Transistor Q1",
+        "kind": "transistor",
+        "holes": "E b7 · B b9 · C b11",
+        "coords": [
+          "b7",
+          "b9",
+          "b11"
+        ],
+        "note": "E-B-C, lato piatto (scritte) verso operatore"
+      },
+      {
+        "n": 5,
+        "el": "Cavetto blu flessibile GND",
+        "kind": "jumper",
+        "holes": "e7 → −",
+        "coords": [
+          "e7"
+        ],
+        "note": "emettitore"
+      },
+      {
+        "n": 6,
+        "el": "Buzzer attivo",
+        "kind": "buzzer",
+        "holes": "− e11 (collettore) · + e14",
+        "coords": [
+          "e11",
+          "e14"
+        ],
+        "note": ""
+      },
+      {
+        "n": 7,
+        "el": "Cavetto rosso +6V",
+        "kind": "jumper",
+        "holes": "b14 → +",
+        "coords": [
+          "b14"
+        ],
+        "note": "buzzer +"
+      },
+      {
+        "n": 8,
+        "el": "Cavetto verde rigido (collettore)",
+        "kind": "jumper",
+        "holes": "a11 → a41",
+        "coords": [
+          "a11",
+          "a41"
+        ],
+        "note": "estende il collettore fino al LED"
+      },
+      {
+        "n": 9,
+        "el": "LED rosso",
+        "kind": "led",
+        "holes": "catodo d41 (collettore) · anodo d44",
+        "coords": [
+          "d41",
+          "d44"
+        ],
+        "note": ""
+      },
+      {
+        "n": 10,
+        "el": "R220",
+        "kind": "resistor",
+        "holes": "b44 → +",
+        "coords": [
+          "b44"
+        ],
+        "note": "+6V → R220 → anodo LED"
+      }
+    ],
+    "collaudo": [
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "Premi = buzzer suona + LED rosso acceso; rilascia = silenzio/spento.",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "BTN a cavallo col 2 e 4 (e2 · e4 · f2 · f4).",
+      "transistor E b7 · B b9 · C b11 (lato piatto verso operatore).",
+      "R5k1 c4 → c9.",
+      "Buzzer − e11, + e14.",
+      "LED catodo d41, anodo d44.",
+      "R220 b44 → +.",
+      "Collettore esteso (cavetto verde) a11→ a41."
+    ],
+    "qc_fun": [
+      "Premuto: buzzer suona e LED acceso insieme. A riposo tutto tace/spento."
+    ],
+    "defects": [
+      {
+        "code": "DEF-01",
+        "text": "Transistor: E/C scambiati (verso del transistor, lato piatto corretto)."
+      },
+      {
+        "code": "DEF-01",
+        "text": "Buzzer polarità invertita → muto. (vedere dove va il +)"
+      },
+      {
+        "code": "DEF-01",
+        "text": "LED invertito → spento."
+      },
+      {
+        "code": "DEF-04",
+        "text": "Pulsante non a cavallo → non parte."
+      },
+      {
+        "code": "DEF-04",
+        "text": "Cavo rosso collegato al buzzer posizionato male (deve andare sul + del buzzer)"
+      },
+      {
+        "code": "DEF-02",
+        "text": "Resistenza sbagliata"
+      }
+    ],
+    "complexity": {
+      "pieces": 5,
+      "pins": 13,
+      "pol": 3,
+      "jump": 4
+    }
+  },
+  {
+    "id": "D2",
+    "name": "Sensore crepuscolare",
+    "difficulty": "difficile",
+    "func": "Buio → LED blu acceso; luce → spento (partitore 100k/LDR pilota la base).",
+    "electrical": "+6V → R100k → nodo_base (col9) → LDR → GND ; collettore → LED+R220 → +6V ; emettitore → GND",
+    "bom": [
+      {
+        "code": "R100k",
+        "label": "Resistenza 100 kΩ",
+        "qty": 1
+      },
+      {
+        "code": "LDR",
+        "label": "Fotoresistenza CDS-55",
+        "qty": 1
+      },
+      {
+        "code": "Q1",
+        "label": "Transistor PN2222 (TO-92)",
+        "qty": 1
+      },
+      {
+        "code": "LED-B",
+        "label": "LED blu 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetti (verde rigido collettore ×1, blu ×1)",
+        "qty": 2
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "LDR (CDS-55)",
+        "kind": "ldr",
+        "holes": "− (GND) – e9",
+        "coords": [
+          "e9"
+        ],
+        "note": "non polarizzata; nodo base = col9 (ramo basso del partitore)"
+      },
+      {
+        "n": 2,
+        "el": "R100k",
+        "kind": "resistor",
+        "holes": "b9 → +",
+        "coords": [
+          "b9"
+        ],
+        "note": "ramo alto del partitore (col9)"
+      },
+      {
+        "n": 3,
+        "el": "Transistor Q1",
+        "kind": "transistor",
+        "holes": "E c7 · B c9 · C c11",
+        "coords": [
+          "c7",
+          "c9",
+          "c11"
+        ],
+        "note": "base = col9; lato piatto verso operatore"
+      },
+      {
+        "n": 4,
+        "el": "Cavetto blu GND",
+        "kind": "jumper",
+        "holes": "e7 → −",
+        "coords": [
+          "e7"
+        ],
+        "note": "emettitore"
+      },
+      {
+        "n": 5,
+        "el": "Cavetto verde rigido (collettore)",
+        "kind": "jumper",
+        "holes": "e11 → e41",
+        "coords": [
+          "e11",
+          "e41"
+        ],
+        "note": "collettore → LED"
+      },
+      {
+        "n": 6,
+        "el": "LED blu",
+        "kind": "led",
+        "holes": "anodo d44 · catodo d41",
+        "coords": [
+          "d44",
+          "d41"
+        ],
+        "note": "catodo lato collettore (col41)"
+      },
+      {
+        "n": 7,
+        "el": "R220",
+        "kind": "resistor",
+        "holes": "b44 → +",
+        "coords": [
+          "b44"
+        ],
+        "note": "+6V → R220 → anodo LED"
+      }
+    ],
+    "collaudo": [
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "QC a TORCIA: buio/ombra → LED acceso; torcia sulla LDR → spento. Delta netto.",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "Partitore: R100k b9 → +. LDR e9 → -; nodo comune col9 = base.",
+      "Transistor E c7 · B c9 · C c11.",
+      "LED catodo d41, anodo d44.",
+      "R220 b44 → +6V.",
+      "Collettore esteso (cavetto verde) e11→ e41."
+    ],
+    "qc_fun": [
+      "Buio → LED acceso; torcia sulla LDR → spento (commutazione netta col transistor)."
+    ],
+    "defects": [
+      {
+        "code": "DEF-04",
+        "text": "Partitore invertito (LDR↔R100k) → acceso alla luce."
+      },
+      {
+        "code": "DEF-01",
+        "text": "Transistor: E/C scambiati (verso del transistor, lato piatto corretto)."
+      },
+      {
+        "code": "DEF-01",
+        "text": "LED invertito (polarità) → spento."
+      },
+      {
+        "code": "DEF-02",
+        "text": "Resistenza sbagliata"
+      }
+    ],
+    "complexity": {
+      "pieces": 5,
+      "pins": 11,
+      "pol": 2,
+      "jump": 2
+    }
+  },
+  {
+    "id": "D3",
+    "name": "Lampeggiatore alternato",
+    "difficulty": "difficile",
+    "func": "Multivibratore astabile: i 2 LED lampeggiano alternati (~0,7 Hz).",
+    "electrical": "astabile 2 transistor accoppiati incrociati; C1: collettore Q1→base Q2 · C2: collettore Q2→base Q1",
+    "bom": [
+      {
+        "code": "Q1",
+        "label": "Transistor PN2222 (TO-92)",
+        "qty": 2
+      },
+      {
+        "code": "C-EL100",
+        "label": "Condensatore elettrolitico 100 µF",
+        "qty": 2
+      },
+      {
+        "code": "R10k",
+        "label": "Resistenza 10 kΩ (pull-up base)",
+        "qty": 2
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω (carico collettore)",
+        "qty": 2
+      },
+      {
+        "code": "LED-R",
+        "label": "LED rosso 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "LED-B",
+        "label": "LED blu 5 mm",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetti blu flessibili GND",
+        "qty": 2
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "R220 #1",
+        "kind": "resistor",
+        "holes": "d3 → +",
+        "coords": [
+          "d3"
+        ],
+        "note": "carico collettore Q1 (col3)"
+      },
+      {
+        "n": 2,
+        "el": "LED rosso (sx)",
+        "kind": "led",
+        "holes": "anodo c3 · catodo c6",
+        "coords": [
+          "c3",
+          "c6"
+        ],
+        "note": "catodo = collettore Q1 (col6)"
+      },
+      {
+        "n": 3,
+        "el": "R10k #1",
+        "kind": "resistor",
+        "holes": "a8 → +",
+        "coords": [
+          "a8"
+        ],
+        "note": "pull-up base Q1 (col8)"
+      },
+      {
+        "n": 4,
+        "el": "Transistor Q1",
+        "kind": "transistor",
+        "holes": "C b6 · B b8 · E b10",
+        "coords": [
+          "b6",
+          "b8",
+          "b10"
+        ],
+        "note": "semicerchio (cerchio vuoto) verso operatore → C-B-E"
+      },
+      {
+        "n": 5,
+        "el": "C1 100 µF",
+        "kind": "cap",
+        "holes": "anodo e6 · catodo e18",
+        "coords": [
+          "e6",
+          "e18"
+        ],
+        "note": "collettore Q1 (col6) → base Q2 (col18)"
+      },
+      {
+        "n": 6,
+        "el": "Transistor Q2",
+        "kind": "transistor",
+        "holes": "E b16 · B b18 · C b20",
+        "coords": [
+          "b16",
+          "b18",
+          "b20"
+        ],
+        "note": "lato piatto verso operatore (specchiato) → E-B-C"
+      },
+      {
+        "n": 7,
+        "el": "C2 100 µF",
+        "kind": "cap",
+        "holes": "anodo d20 · catodo d8",
+        "coords": [
+          "d20",
+          "d8"
+        ],
+        "note": "collettore Q2 (col20) → base Q1 (col8)"
+      },
+      {
+        "n": 8,
+        "el": "R10k #2",
+        "kind": "resistor",
+        "holes": "a18 → +",
+        "coords": [
+          "a18"
+        ],
+        "note": "pull-up base Q2 (col18)"
+      },
+      {
+        "n": 9,
+        "el": "LED blu (dx)",
+        "kind": "led",
+        "holes": "anodo c24 · catodo c20",
+        "coords": [
+          "c24",
+          "c20"
+        ],
+        "note": "catodo = collettore Q2 (col20)"
+      },
+      {
+        "n": 10,
+        "el": "R220 #2",
+        "kind": "resistor",
+        "holes": "d24 → +",
+        "coords": [
+          "d24"
+        ],
+        "note": "carico collettore Q2 (col24)"
+      },
+      {
+        "n": 11,
+        "el": "Cavetto blu flessibile GND",
+        "kind": "jumper",
+        "holes": "e10 → −",
+        "coords": [
+          "e10"
+        ],
+        "note": "emettitore Q1 (col10)"
+      },
+      {
+        "n": 12,
+        "el": "Cavetto blu flessibile GND",
+        "kind": "jumper",
+        "holes": "e16 → −",
+        "coords": [
+          "e16"
+        ],
+        "note": "emettitore Q2 (col16)"
+      }
+    ],
+    "collaudo": [
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "I 2 LED lampeggiano alternati (~1 volta/sec).",
+      "Se restano fissi/spenti → verso condensatori o transistor non specchiati.",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "Q1 (C b6 · B b8 · E b10, semicerchio verso operatore) e Q2 (E b16 · B b18 · C b20, piatto verso operatore).",
+      "C1 e6→e18 (collettore Q1→base Q2), C2 d20→d8 (collettore Q2→base Q1). Controllare striscia sul corpo del condensatore, corrisponde al catodo (-).",
+      "Cavetti blu: e10 → -, e16 → -."
+    ],
+    "qc_fun": [
+      "Batteria → i 2 LED lampeggiano alternati (~0,7 Hz). Nessuno resta fisso."
+    ],
+    "defects": [
+      {
+        "code": "DEF-01",
+        "text": "Condensatore o transistor invertiti (polarità) → nessuna oscillazione."
+      },
+      {
+        "code": "DEF-01",
+        "text": "Transistor non specchiati → niente lampeggio."
+      },
+      {
+        "code": "DEF-01",
+        "text": "Condensatori non specchiati → niente lampeggio"
+      },
+      {
+        "code": "DEF-03",
+        "text": "Gamba transistor non a fondo → ramo aperto."
+      },
+      {
+        "code": "DEF-02",
+        "text": "Resistenza sbagliata"
+      }
+    ],
+    "complexity": {
+      "pieces": 8,
+      "pins": 20,
+      "pol": 4,
+      "jump": 2
+    }
+  },
+  {
+    "id": "D4",
+    "name": "Timer a spegnimento ritardato",
+    "difficulty": "difficile",
+    "func": "Premi e rilasci → il buzzer suona e continua ~1–2 s, poi tace (RC + transistor).",
+    "electrical": "BTN → diodo carica 100 µF ; cap pilota base via R10k → buzzer ; al rilascio il diodo blocca → scarica su R10k → spegnimento ritardato",
+    "bom": [
+      {
+        "code": "BTN",
+        "label": "Pulsante tattile 4 pin",
+        "qty": 1
+      },
+      {
+        "code": "D1",
+        "label": "Diodo 1N4007",
+        "qty": 1
+      },
+      {
+        "code": "C-EL100",
+        "label": "Condensatore elettrolitico 100 µF",
+        "qty": 1
+      },
+      {
+        "code": "R10k",
+        "label": "Resistenza 10 kΩ",
+        "qty": 1
+      },
+      {
+        "code": "Q1",
+        "label": "Transistor PN2222 (TO-92)",
+        "qty": 1
+      },
+      {
+        "code": "BUZ-A",
+        "label": "Buzzer attivo",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetti (rosso rigido ×2, blu rigido ×1, blu flessibile ×1, arancione rigido collettore ×1)",
+        "qty": 5
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "Pulsante BTN",
+        "kind": "button",
+        "holes": "e3 · e5 · f3 · f5",
+        "coords": [
+          "e3",
+          "e5",
+          "f3",
+          "f5"
+        ],
+        "note": "+6V → col3, uscita col5"
+      },
+      {
+        "n": 2,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "d3 → +",
+        "coords": [
+          "d3"
+        ],
+        "note": "ingresso bottone"
+      },
+      {
+        "n": 3,
+        "el": "Diodo 1N4007",
+        "kind": "diode",
+        "holes": "anodo d5 · catodo d13 (banda)",
+        "coords": [
+          "d5",
+          "d13"
+        ],
+        "note": "col5 → nodo carica (col13)"
+      },
+      {
+        "n": 4,
+        "el": "Condensatore 100 µF",
+        "kind": "cap",
+        "holes": "+ c13 (nodo carica) · − h13",
+        "coords": [
+          "c13",
+          "h13"
+        ],
+        "note": "a cavallo della fessura"
+      },
+      {
+        "n": 5,
+        "el": "Cavetto blu rigido GND",
+        "kind": "jumper",
+        "holes": "i13 → −",
+        "coords": [
+          "i13"
+        ],
+        "note": "catodo cap (col13-alto)"
+      },
+      {
+        "n": 6,
+        "el": "R10k",
+        "kind": "resistor",
+        "holes": "b13 – b21",
+        "coords": [
+          "b13",
+          "b21"
+        ],
+        "note": "nodo carica → base (col21)"
+      },
+      {
+        "n": 7,
+        "el": "Transistor Q1",
+        "kind": "transistor",
+        "holes": "E a19 · B a21 · C a23",
+        "coords": [
+          "a19",
+          "a21",
+          "a23"
+        ],
+        "note": "E-B-C, lato piatto verso operatore"
+      },
+      {
+        "n": 8,
+        "el": "Cavetto blu flessibile GND",
+        "kind": "jumper",
+        "holes": "b19 → −",
+        "coords": [
+          "b19"
+        ],
+        "note": "emettitore (col19)"
+      },
+      {
+        "n": 9,
+        "el": "Cavetto arancione rigido (collettore)",
+        "kind": "jumper",
+        "holes": "b23 → b32",
+        "coords": [
+          "b23",
+          "b32"
+        ],
+        "note": "estende il collettore (col23) fino al buzzer (col32); tratta corta"
+      },
+      {
+        "n": 10,
+        "el": "Buzzer attivo",
+        "kind": "buzzer",
+        "holes": "− e32 (collettore) · + e35",
+        "coords": [
+          "e32",
+          "e35"
+        ],
+        "note": ""
+      },
+      {
+        "n": 11,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "b35 → +",
+        "coords": [
+          "b35"
+        ],
+        "note": "buzzer +"
+      }
+    ],
+    "collaudo": [
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "Premi e rilascia → il buzzer suona e continua ~1–2 s, poi tace.",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "Diodo anodo d5 → catodo d13 (banda verso col13).",
+      "Condensatore + c13, − h13 (alto) a cavallo fessura.",
+      "R10k b13 → b21.",
+      "Transistor E a19 · B a21 · C a23.",
+      "Buzzer − e32, + e35.",
+      "Collettore esteso (cavetto arancione) b23 → b32.",
+      "Cavetti rossi d3 → +, b35 → +.",
+      "Blu i13 → −, b19 → −."
+    ],
+    "qc_fun": [
+      "Premi-rilascia: il suono persiste ~1–2 s poi cessa (spegnimento ritardato)."
+    ],
+    "defects": [
+      {
+        "code": "DEF-01",
+        "text": "Diodo invertito (polarità) (controllare banda → -)"
+      },
+      {
+        "code": "DEF-01",
+        "text": "Transistor E/C scambiati (polarità, lato piatto verso operatore)"
+      },
+      {
+        "code": "DEF-01",
+        "text": "Buzzer polarità invertita → muto. (controllare il +)"
+      },
+      {
+        "code": "DEF-01",
+        "text": "Condensatore elettrolitico invertito. (controllare banda → -)"
+      }
+    ],
+    "complexity": {
+      "pieces": 6,
+      "pins": 14,
+      "pol": 4,
+      "jump": 5
+    }
+  },
+  {
+    "id": "D5",
+    "name": "Opto-isolatore a pulsante (4N35)",
+    "difficulty": "difficile",
+    "func": "Premi → LED_in acceso → il fototransistor conduce → LED_out acceso (ingresso e uscita isolati dalla fessura).",
+    "electrical": "BTN → R220 → LED_in → LED interno 4N35 → GND ; +6V → R220 → LED_out → collettore → fototransistor → emettitore → GND",
+    "bom": [
+      {
+        "code": "OPTO",
+        "label": "Optoaccoppiatore 4N35 (DIP-6)",
+        "qty": 1
+      },
+      {
+        "code": "BTN",
+        "label": "Pulsante tattile 4 pin",
+        "qty": 1
+      },
+      {
+        "code": "R220",
+        "label": "Resistenza 220 Ω",
+        "qty": 2
+      },
+      {
+        "code": "LED-R",
+        "label": "LED rosso 5 mm (ingresso)",
+        "qty": 1
+      },
+      {
+        "code": "LED-Y",
+        "label": "LED giallo 5 mm (uscita)",
+        "qty": 1
+      },
+      {
+        "code": "CAV",
+        "label": "Cavetti (rosso rigido ×1, blu rigido ×2, blu flessibile ×1)",
+        "qty": 4
+      }
+    ],
+    "build": [
+      {
+        "n": 1,
+        "el": "Pulsante BTN",
+        "kind": "button",
+        "holes": "e2 · e4 · f2 · f4",
+        "coords": [
+          "e2",
+          "e4",
+          "f2",
+          "f4"
+        ],
+        "note": "+6V → col2, uscita col4"
+      },
+      {
+        "n": 2,
+        "el": "Cavetto rosso rigido +6V",
+        "kind": "jumper",
+        "holes": "d2 → +",
+        "coords": [
+          "d2"
+        ],
+        "note": "ingresso bottone"
+      },
+      {
+        "n": 3,
+        "el": "R220 #1 (ingresso)",
+        "kind": "resistor",
+        "holes": "d4 – d9",
+        "coords": [
+          "d4",
+          "d9"
+        ],
+        "note": ""
+      },
+      {
+        "n": 4,
+        "el": "LED_in",
+        "kind": "led",
+        "holes": "anodo c9 · catodo c13",
+        "coords": [
+          "c9",
+          "c13"
+        ],
+        "note": "col13 → LED interno 4N35"
+      },
+      {
+        "n": 5,
+        "el": "4N35 (DIP-6)",
+        "kind": "optocoupler",
+        "holes": "ingresso e13·e14·e15 / uscita g13·g14·g15",
+        "coords": [
+          "e13",
+          "e14",
+          "e15",
+          "g13",
+          "g14",
+          "g15"
+        ],
+        "note": "tacca lato f–j (lato alto). LED int: anodo col13-basso, catodo col14-basso. Fototr.: base col13-alto (libera), emettitore col14-alto, collettore col15-alto"
+      },
+      {
+        "n": 6,
+        "el": "Cavetto blu rigido GND",
+        "kind": "jumper",
+        "holes": "c14 → −",
+        "coords": [
+          "c14"
+        ],
+        "note": "catodo LED interno (col14-basso)"
+      },
+      {
+        "n": 7,
+        "el": "LED_out",
+        "kind": "led",
+        "holes": "catodo h15 (collettore) · anodo h18",
+        "coords": [
+          "h15",
+          "h18"
+        ],
+        "note": ""
+      },
+      {
+        "n": 8,
+        "el": "R220 #2 (uscita)",
+        "kind": "resistor",
+        "holes": "f18 → +",
+        "coords": [
+          "f18"
+        ],
+        "note": "al rail +"
+      },
+      {
+        "n": 9,
+        "el": "Cavetto blu rigido GND",
+        "kind": "jumper",
+        "holes": "j14 → −",
+        "coords": [
+          "j14"
+        ],
+        "note": "emettitore (col14-alto)"
+      },
+      {
+        "n": 10,
+        "el": "Cavetto blu flessibile GND",
+        "kind": "jumper",
+        "holes": "da − a −",
+        "coords": [],
+        "note": "di lato a destra della resistenza, per non ostacolare la vista dall’alto"
+      }
+    ],
+    "collaudo": [
+      "Collega batteria 6V (+→rossa, −→blu).",
+      "Premi = LED_in + LED_out accesi (l'uscita segue l'ingresso attraverso l'isolamento); rilascia = spenti.",
+      "Stacca la batteria."
+    ],
+    "qc_pos": [
+      "4N35 su col 13-14-15, tacca verso lato f–j; ingresso in a–e (col13/14), uscita in f–j (col14/15).",
+      "LED_in anodo c9, catodo c13; LED_out catodo h15, anodo h18.",
+      "R220 uscita f18 → +.",
+      "cavetti blu c14 → −, j14 → −."
+    ],
+    "qc_fun": [
+      "Premuto: LED_in e LED_out accesi insieme. L'uscita è isolata galvanicamente dall'ingresso."
+    ],
+    "defects": [
+      {
+        "code": "DEF-04",
+        "text": "Verso optoaccopiatore 4N35 errato → niente."
+      },
+      {
+        "code": "DEF-01",
+        "text": "LED_in / LED_out invertito (polarità) → spento."
+      },
+      {
+        "code": "DEF-04",
+        "text": "Resistenze posizionate male"
+      },
+      {
+        "code": "DEF-04",
+        "text": "Emettitore↔collettore scambiati → LED_out spento."
+      }
+    ],
+    "complexity": {
+      "pieces": 5,
+      "pins": 15,
+      "pol": 3,
+      "jump": 4
+    }
+  }
+]

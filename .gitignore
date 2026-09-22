@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+node_modules/
+*.log
+
+# chiavi API — mai nel repo
+**/keys.txt
+**/chiave.txt
+**/chiavi.txt
+.env
+
+# output runtime
+1-webapp-llm/chatbotLLM/data/uploads/
+1-webapp-llm/chatbotLLM/data/tempi_commesse.xlsx
+1-webapp-llm/chatbotLLM/data/temp_audio.wav
+2-vlm/data/runs/
+2-vlm/data/ponte/
+2-vlm/data/registri/
+2-vlm/scatti/

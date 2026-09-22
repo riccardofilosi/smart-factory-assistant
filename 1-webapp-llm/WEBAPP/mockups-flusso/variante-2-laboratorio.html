@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flusso — Variante 2 · Laboratorio (scuro + superfici bianche)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Roboto:wght@400;500&family=Inconsolata:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0D1428; --navy-2:#132048; --bg:#F2F4F8; --surface:#FFFFFF;
+    --ink:#111827; --ink-2:#5B6472; --border:#DDE2EA;
+    --red:#E5273B; --red-neon:#FF4655; --red-bg:#FDECEE;
+    --blue:#1D6FE0; --blue-neon:#3FA9F5; --blue-bg:#EAF2FE;
+    --ok:#16A34A; --ok-bg:#EAF7EF; --ko:#DC2626; --ko-bg:#FDECEC;
+    --glass:rgba(255,255,255,.07); --glass-line:rgba(109,194,249,.25);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:'Roboto',system-ui,sans-serif;font-size:16px}
+  [hidden]{display:none!important}
+
+  /* ===== 1 · INTRO ===== */
+  #s-intro{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center}
+  #s-intro video{width:100%;height:100%;object-fit:cover}
+  #s-intro{border:none;padding:0;cursor:pointer;width:100%}
+  #s-intro video{pointer-events:none}
+  #s-intro:focus-visible{outline:4px solid var(--blue-neon);outline-offset:-4px}
+  .tap{position:absolute;left:0;right:0;bottom:44px;text-align:center;pointer-events:none}
+  .tap span{display:inline-block;font:600 14px 'Poppins',sans-serif;color:#fff;letter-spacing:.03em;
+    background:rgba(13,20,40,.55);border:1px solid var(--glass-line);border-radius:99px;padding:12px 28px;
+    backdrop-filter:blur(6px);animation:pulse 2.2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+  /* ===== 2 · LOGIN split-screen ===== */
+  #s-login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+  .l-brand{position:relative;background:url("../intro/poster.jpg") center/cover no-repeat,var(--navy);overflow:hidden}
+  .l-brand::after{content:"";position:absolute;inset:0;background:linear-gradient(200deg,rgba(9,11,31,.25),rgba(9,11,31,.86) 78%)}
+  .l-brand .claim{position:absolute;left:48px;bottom:48px;z-index:2;color:#fff;max-width:420px}
+  .l-brand .eyebrow{font:700 12px 'Inconsolata',monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--blue-neon)}
+  .l-brand h2{font:600 34px 'Poppins',sans-serif;margin-top:10px;line-height:1.2}
+  .l-brand p{margin-top:12px;color:#B6C4DE;font-size:15px}
+  .l-brand .rails{position:absolute;left:0;right:0;bottom:0;z-index:3}
+  .l-brand .rails i{display:block;height:3px}
+  .l-brand .rails i:first-child{background:var(--red-neon);box-shadow:0 0 14px rgba(255,70,85,.7)}
+  .l-brand .rails i:last-child{background:var(--blue-neon);box-shadow:0 0 14px rgba(63,169,245,.7)}
+  .l-form{display:flex;align-items:center;justify-content:center;background:var(--surface);padding:48px}
+  .form-box{width:min(380px,100%)}
+  .form-box h1{font:600 28px 'Poppins',sans-serif}
+  .form-box .sub{color:var(--ink-2);font-size:14px;margin:6px 0 32px}
+  .field{margin-bottom:20px}
+  .field label{display:block;font:600 12px 'Inconsolata',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px}
+  .field input{width:100%;height:52px;background:#FAFBFD;border:1px solid var(--border);border-radius:10px;
+    color:var(--ink);font:500 17px 'Roboto',sans-serif;padding:0 16px;transition:border-color .15s,box-shadow .15s}
+  .field input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,224,.18)}
+  .err{display:none;color:var(--ko);font-size:13px;margin:-8px 0 16px}
+  .err.show{display:block}
+  .btn{width:100%;height:54px;border:none;border-radius:10px;cursor:pointer;background:var(--blue);
+    color:#fff;font:600 16px 'Poppins',sans-serif;transition:background .15s,transform .12s}
+  .btn:hover{background:#1A5FC4;transform:translateY(-1px)}
+  .btn:focus-visible{outline:3px solid var(--blue-neon);outline-offset:3px}
+  .login-note{margin-top:20px;color:var(--ink-2);font-size:12px;text-align:center}
+  @media (max-width:900px){#s-login{grid-template-columns:1fr}.l-brand{min-height:34vh}}
+
+  /* ===== 3 · HOME T0 (struttura home-B, colori intro) ===== */
+  .hero{position:relative;background:linear-gradient(150deg,var(--navy) 30%,var(--navy-2) 100%);padding:44px 0;overflow:hidden}
+  .hero svg.circuits{position:absolute;inset:0;width:100%;height:100%;opacity:.45}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+    background:linear-gradient(90deg,var(--red-neon),var(--blue-neon));box-shadow:0 0 16px rgba(63,169,245,.55)}
+  .hero-inner{position:relative;max-width:1080px;margin:0 auto;padding:0 32px;color:#fff}
+  .hero-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:28px}
+  .hero .eyebrow{font:600 12px 'Inconsolata',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--blue-neon)}
+  .hero h1{font:600 32px 'Poppins',sans-serif;margin-top:6px}
+  .hero .who{color:#B6C4DE;font-size:14px;text-align:right}
+  .hero .who b{color:#fff}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .kpi{background:var(--glass);border:1px solid var(--glass-line);border-radius:12px;padding:16px 20px;backdrop-filter:blur(4px)}
+  .kpi .l{font-size:13px;color:#B6C4DE}
+  .kpi .n{font:700 32px 'Poppins',sans-serif;color:#fff;margin-top:2px}
+  .kpi.ok .n{color:#5BD991} .kpi.ko .n{color:#FF8084} .kpi.open .n{color:#6DC2F9}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 32px 130px}
+  .chips{display:flex;gap:10px;margin-bottom:20px}
+  .chip{height:44px;padding:0 20px;border-radius:99px;border:1px solid var(--border);background:var(--surface);
+    color:var(--ink-2);font:600 14px 'Poppins',sans-serif;cursor:pointer;transition:all .12s}
+  .chip:hover{border-color:var(--blue)}
+  .chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+  .chip:focus-visible{outline:3px solid var(--blue-neon);outline-offset:2px}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:36px}
+  .panel-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font:600 14px 'Poppins',sans-serif}
+  .count{font:700 13px 'Inconsolata',monospace;background:var(--navy);color:#fff;border-radius:99px;padding:2px 10px}
+  .cols{display:grid;grid-template-columns:90px 1fr 240px 140px 90px;gap:16px;padding:10px 24px;
+    font:600 11px 'Inconsolata',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);
+    border-bottom:1px solid var(--border);background:#FAFBFC}
+  .row{display:grid;grid-template-columns:90px 1fr 240px 140px 90px;gap:16px;align-items:center;width:100%;
+    text-align:left;background:none;border:none;border-bottom:1px solid var(--border);padding:16px 24px;
+    cursor:pointer;color:inherit;font-family:inherit;transition:background .12s;position:relative}
+  .row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+  .row[data-diff="F"]::before{background:var(--blue-neon)}
+  .row[data-diff="D"]::before{background:var(--red-neon)}
+  .row:last-child{border-bottom:none}
+  .row:hover{background:var(--blue-bg)}
+  .row:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
+  .code{font:700 18px 'Inconsolata',monospace}
+  .row[data-diff="F"] .code{color:var(--blue)} .row[data-diff="D"] .code{color:var(--red)}
+  .code small{display:block;font:600 10px 'Inconsolata',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+  .name{font:600 19px 'Poppins',sans-serif}
+  .op{font-size:13px;color:var(--ink-2)}
+  .dest{font-weight:500}
+  .dest::before{content:"→ ";color:var(--ink-2)}
+  .stato{font:600 11px 'Poppins',sans-serif;letter-spacing:.05em;text-transform:uppercase;text-align:center;border-radius:99px;padding:5px 0}
+  .stato.todo{background:var(--blue-bg);color:var(--blue)}
+  .stato.ok{background:var(--ok-bg);color:var(--ok)} .stato.ko{background:var(--ko-bg);color:var(--ko)}
+  #done-panel .row{cursor:default;opacity:.75}
+  #done-panel .row:hover{background:none}
+  #done-panel .name{color:var(--ink-2)}
+  .fab{position:fixed;right:32px;bottom:32px;width:60px;height:60px;border-radius:50%;
+    background:var(--navy);border:none;cursor:pointer;box-shadow:0 6px 20px rgba(13,20,40,.4);
+    display:flex;align-items:center;justify-content:center;transition:transform .15s}
+  .fab:hover{transform:scale(1.06)}
+  .fab:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+  .fab svg{width:26px;height:26px;fill:#fff}
+
+  /* ===== 4 · PICKING T1 ===== */
+  #s-picking .hero{padding:30px 0 26px}
+  #s-picking .hero-inner{max-width:860px}
+  #s-picking .hero-top{align-items:flex-start;margin-bottom:0}
+  #s-picking .hero h1{font-size:28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  #s-picking .hero h1 .cod{font:700 28px 'Inconsolata',monospace}
+  .back{font:600 13px 'Poppins',sans-serif;color:#B6C4DE;text-decoration:none;display:inline-block;margin-bottom:12px}
+  .back:hover{color:#fff}
+  .back:focus-visible{outline:3px solid var(--blue-neon);outline-offset:2px}
+  .diff{font:600 11px 'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:5px 12px}
+  .diff.F{background:rgba(63,169,245,.18);color:var(--blue-neon);border:1px solid rgba(63,169,245,.4)}
+  .diff.D{background:rgba(255,70,85,.16);color:#FF8084;border:1px solid rgba(255,70,85,.4)}
+  .steps{display:flex;align-items:center;gap:8px;margin-top:22px;flex-wrap:wrap}
+  .step{display:flex;align-items:center;gap:8px;font:600 12px 'Poppins',sans-serif;color:#7A8AA8}
+  .step .dot{width:10px;height:10px;border-radius:50%;border:2px solid #7A8AA8}
+  .step.active{color:#fff}
+  .step.active .dot{background:var(--blue-neon);border-color:var(--blue-neon);box-shadow:0 0 10px rgba(63,169,245,.8)}
+  .step-sep{width:26px;height:1px;background:#3A4A6E}
+  #s-picking .wrap{max-width:860px;padding:32px 32px 56px}
+  #s-picking .panel-head{font-size:15px;display:flex;gap:12px;align-items:baseline}
+  .psum{font:600 12px 'Inconsolata',monospace;color:var(--ink-2);text-transform:uppercase;letter-spacing:.08em}
+  .item{display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--border);padding:16px 24px}
+  .item:last-child{border-bottom:none}
+  .foto{width:170px;height:130px;flex:none;border:1px solid var(--border);border-radius:12px;background:#fff;object-fit:contain;padding:6px}
+  .txt{flex:1;min-width:0}
+  .nome{font:600 21px 'Poppins',sans-serif;line-height:1.25}
+  .txt small{display:block;font:700 13px 'Inconsolata',monospace;letter-spacing:.08em;color:var(--ink-2);margin-top:6px}
+  .qta{flex:none;width:104px;height:84px;border-radius:12px;background:var(--blue-bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  .qta b{font:700 32px 'Inconsolata',monospace;color:var(--blue)}
+  .qta span{font:600 10px 'Inconsolata',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+  .avanti{width:100%;height:56px;margin-top:20px;border:none;border-radius:12px;cursor:pointer;background:var(--blue);
+    color:#fff;font:600 16px 'Poppins',sans-serif;transition:background .15s}
+  .avanti:hover{background:#1A5FC4}
+  .avanti:focus-visible{outline:3px solid var(--blue-neon);outline-offset:3px}
+  @media (max-width:680px){.item{gap:14px;padding:12px 16px}.foto{width:110px;height:88px}.nome{font-size:17px}
+    .qta{width:80px;height:66px}.qta b{font-size:24px}.steps{display:none}}
+
+  /* ===== 5 · ASSEMBLAGGIO T2 ===== */
+  #s-assemblaggio .hero{padding:26px 0 22px}
+  #s-assemblaggio .hero-top{align-items:flex-start;margin-bottom:0}
+  #s-assemblaggio .hero h1{font-size:26px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  #s-assemblaggio .hero h1 .cod{font:700 26px 'Inconsolata',monospace}
+  #s-assemblaggio .wrap{max-width:1080px;padding:28px 32px 150px}
+  #s-assemblaggio .fab{bottom:122px}
+  .step.done .dot{background:#7A8AA8;border-color:#7A8AA8}
+  .comp{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:20px}
+  .comp-top{display:flex;align-items:center;gap:24px;padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:18px}
+  .cnome{font:600 26px 'Poppins',sans-serif;line-height:1.2}
+  .ccod{font:700 13px 'Inconsolata',monospace;letter-spacing:.08em;color:var(--ink-2);margin-top:6px;display:block}
+  .polbadge{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font:600 13px 'Roboto',sans-serif;
+    background:var(--red-bg);color:var(--red);border-radius:99px;padding:8px 16px}
+  .polbadge:empty{display:none}
+  .lbl{font:600 11px 'Inconsolata',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+  .coord{font:700 44px 'Inconsolata',monospace;color:var(--blue);margin:10px 0 0;line-height:1.15;word-spacing:.05em}
+  .stepbar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--border);
+    box-shadow:0 -4px 18px rgba(13,20,40,.08)}
+  .stepbar-inner{position:relative;padding:14px 32px;display:flex;align-items:center;justify-content:center}
+  .track{display:flex;align-items:center;justify-content:center;gap:6px;overflow-x:auto;padding:4px 2px;max-width:calc(100% - 400px)}
+  .snum{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid var(--border);background:var(--surface);
+    font:700 15px 'Inconsolata',monospace;color:var(--ink-2);cursor:pointer;transition:all .12s}
+  .snum:hover{border-color:var(--blue)}
+  .snum:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  .snum.past{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:none}
+  .snum.cur{background:var(--surface);border-color:var(--blue);color:var(--blue);box-shadow:0 0 0 3px rgba(29,111,224,.12)}
+  .snum.available{border-color:var(--blue);color:var(--blue)}
+  .snum.future,.snum:disabled{border-color:var(--border);background:var(--surface);color:#9AA4B2;cursor:not-allowed;box-shadow:none}
+  .snum.future:hover,.snum:disabled:hover{border-color:var(--border)}
+  /* semaforo VLM (ponte read-only sul registro): pallino PIENO del colore del
+     verdetto — il colore VLM sostituisce il blu di past/cur (richiesta 28/07) */
+  .snum.vlm-verde{background:#2FBF71;border-color:#2FBF71;color:#fff;box-shadow:0 0 0 3px rgba(47,191,113,.28)}
+  .snum.vlm-giallo{background:#E8B93E;border-color:#E8B93E;color:#1F2733;box-shadow:0 0 0 3px rgba(232,185,62,.32)}
+  .snum.vlm-rosso{background:#E5533C;border-color:#E5533C;color:#fff;box-shadow:0 0 0 3px rgba(229,83,60,.32)}
+  .snum.vlm-grigio{background:#7A8AA8;border-color:#7A8AA8;color:#fff;box-shadow:0 0 0 3px rgba(122,138,168,.22)}
+  .sline{flex:none;width:14px;height:2px;background:var(--border)}
+  .sline.past{background:var(--blue)}
+  .stepinfo{position:absolute;left:32px;top:50%;transform:translateY(-50%);text-align:left;display:flex;flex-direction:column;gap:4px}
+  .stepinfo .px{font:700 15px 'Inconsolata',monospace}
+  .stepinfo .guard{font-size:11px;color:var(--blue);min-height:14px}
+  .stepinfo .kb{font-size:11px;color:var(--ink-2)}
+  /* Anteprima di stampa (interna all'app) */
+  .print-preview{margin:auto;border:none;border-radius:14px;padding:0;max-width:520px;width:calc(100% - 32px);
+    background:var(--surface);box-shadow:0 24px 70px rgba(13,20,40,.35);overflow:hidden}
+  .print-preview::backdrop{background:rgba(13,20,40,.55)}
+  .pp-head{padding:16px 22px;border-bottom:1px solid var(--border)}
+  .pp-head h2{font:600 17px 'Poppins',sans-serif}
+  .pp-head .pp-sub{font:500 12px 'Inconsolata',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-top:2px}
+  .pp-sheet{background:#E9ECF2;padding:24px;display:flex;justify-content:center}
+  .pp-sheet .label{max-width:400px}
+  .pp-actions{display:flex;gap:12px;justify-content:flex-end;padding:16px 22px;border-top:1px solid var(--border)}
+  .pp-btn{min-height:44px;padding:0 22px;border-radius:8px;font:600 14px 'Poppins',sans-serif;cursor:pointer;border:1px solid var(--border)}
+  .pp-btn.ghost{background:#fff;color:var(--ink-2)}
+  .pp-btn.ghost:hover{color:var(--ink);border-color:var(--ink-2)}
+  .pp-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .pp-btn.primary:hover{filter:brightness(1.15)}
+  .pp-btn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  .stepmeta{position:absolute;right:32px;top:50%;transform:translateY(-50%)}
+  .as-fwd{height:40px;padding:0 18px;border:none;border-radius:9px;background:var(--blue);color:#fff;
+    font:600 13px 'Poppins',sans-serif;cursor:pointer;white-space:nowrap;transition:background .15s}
+  .as-fwd:hover{background:#1A5FC4}
+  .as-fwd:focus-visible{outline:3px solid var(--blue-neon);outline-offset:2px}
+  .as-fwd:disabled{background:#C8D0DC;color:#667085;cursor:not-allowed}
+  .as-fwd:disabled:hover{background:#C8D0DC}
+  .safety-rail{position:absolute;left:0;right:0;top:-2px;height:2px;background:var(--border);overflow:hidden}
+  .safety-rail-fill{display:block;width:0;height:100%;background:var(--blue);transform-origin:left center}
+  .global-notices{position:fixed;right:24px;top:24px;z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-width:min(460px,calc(100vw - 48px));pointer-events:none}
+  .active-session-notice{box-sizing:border-box;max-width:100%;background:var(--blue-bg);border:1px solid #93C5FD;color:#174EA6;border-radius:9px;padding:10px 14px;font-size:12px;pointer-events:auto}
+  @media (max-width:860px){.coord{font-size:32px}.comp .foto{width:120px;height:95px}.cnome{font-size:20px}
+    .track{max-width:calc(100% - 240px)}.stepinfo .guard{display:none}.stepbar-inner{padding-left:20px;padding-right:20px}}
+
+  /* ===== 6 · COLLAUDO & CQ T3 ===== */
+  #s-collaudo .hero{padding:26px 0 22px}
+  #s-collaudo .hero h1{font-size:26px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  #s-collaudo .hero h1 .cod{font:700 26px 'Inconsolata',monospace}
+  .cq-wrap{max-width:1160px;margin:0 auto;padding:28px 32px 60px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+  .cq-finita{display:flex;gap:20px;align-items:stretch;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px}
+  .cq-finita img{width:220px;height:160px;flex:none;border:1px solid var(--border);border-radius:12px;object-fit:cover;background:#fff}
+  .cq-finita .body{display:flex;flex-direction:column;justify-content:center}
+  .cq-lbl{font:600 11px 'Inconsolata',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+  .cq-fn{font:500 18px 'Roboto',sans-serif;line-height:1.5;margin-top:8px}
+  .cq-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+  .cq-phead{padding:14px 22px;border-bottom:1px solid var(--border);font:600 15px 'Poppins',sans-serif;display:flex;align-items:center;gap:10px}
+  .cq-tag{font:700 11px 'Inconsolata',monospace;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:3px 10px}
+  .cq-tag.base{background:var(--blue-bg);color:var(--blue)}
+  .cq-tag.spec{background:var(--ok-bg);color:var(--ok)}
+  .cq-list{list-style:none;padding:8px 22px 14px}
+  .cq-list li{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid #EEF1F6;font-size:16px;line-height:1.5}
+  .cq-list li:last-child{border-bottom:none}
+  .cq-list .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--blue-bg);color:var(--blue);
+    font:700 13px 'Inconsolata',monospace;display:flex;align-items:center;justify-content:center}
+  .cq-list.pos .num{background:#F0F2F6;color:var(--ink-2)}
+  .cq-sub{padding:14px 22px 4px;font:600 12px 'Inconsolata',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+  .cq-side{position:sticky;top:24px;display:flex;flex-direction:column;gap:20px}
+  .cq-card{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+  .cq-card > h3{font:600 14px 'Poppins',sans-serif;padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .cq-card > h3 .dot-ko{width:10px;height:10px;border-radius:50%;background:var(--ko)}
+  .cq-dif{padding:6px 20px 14px}
+  .cq-dif .row{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:11px 0;border-bottom:1px solid #EEF1F6}
+  .cq-dif .row:last-child{border-bottom:none}
+  .cq-dif .code{font:700 13px 'Inconsolata',monospace;color:var(--ko);white-space:nowrap}
+  .cq-dif .txt{font-size:14px;line-height:1.45}
+  .cq-esito{padding:20px}
+  .cq-esito p{font-size:13px;color:var(--ink-2);margin-bottom:16px}
+  .cq-btn{width:100%;height:52px;border:none;border-radius:10px;cursor:pointer;font:600 15px 'Poppins',sans-serif;transition:all .15s;margin-bottom:10px}
+  .cq-btn.ok{background:var(--ok);color:#fff}
+  .cq-btn.ok:hover{background:#128a3e}
+  .cq-btn.ko{background:#fff;border:1.5px solid var(--ko);color:var(--ko)}
+  .cq-btn.ko:hover{background:var(--ko);color:#fff}
+  .cq-btn:focus-visible{outline:3px solid var(--blue-neon);outline-offset:3px}
+  .cq-btn.ko .sub{display:block;font:500 11px 'Roboto',sans-serif;opacity:.8;margin-top:2px}
+  .chat-wrap{position:fixed;right:32px;bottom:32px;z-index:6;display:flex;align-items:flex-end;gap:12px}
+  .chat-bubble{max-width:250px;background:var(--surface);border:1px solid var(--border);border-radius:16px 16px 4px 16px;
+    padding:14px 16px;box-shadow:0 8px 28px rgba(13,20,40,.18);position:relative;font-size:14px;line-height:1.45;color:var(--ink)}
+  .chat-bubble strong{color:var(--blue)}
+  .chat-bubble::after{content:"";position:absolute;right:-7px;bottom:14px;width:14px;height:14px;background:var(--surface);
+    border-right:1px solid var(--border);border-bottom:1px solid var(--border);transform:rotate(-45deg)}
+  .chat-bubble .x{position:absolute;top:6px;right:8px;border:none;background:none;color:var(--ink-2);cursor:pointer;font-size:15px;line-height:1;padding:2px}
+  .chat-bubble .x:hover{color:var(--ink)}
+  .chat-fab{width:62px;height:62px;flex:none;border-radius:50%;background:linear-gradient(135deg,var(--blue),#2B7FD9);
+    border:none;cursor:pointer;box-shadow:0 6px 22px rgba(29,111,224,.45);display:flex;align-items:center;justify-content:center;transition:transform .15s;position:relative}
+  .chat-fab::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--blue-neon);opacity:.5;animation:ring 2.4s ease-out infinite}
+  @keyframes ring{0%{transform:scale(1);opacity:.5}70%{transform:scale(1.35);opacity:0}100%{opacity:0}}
+  .chat-fab:hover{transform:scale(1.06)}
+  .chat-fab:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+  .chat-fab svg{width:28px;height:28px;fill:#fff}
+  @media (max-width:900px){.cq-wrap{grid-template-columns:1fr}.cq-side{position:static}.cq-finita{flex-direction:column}.cq-finita img{width:100%}}
+
+  /* ===== 7 · CODICE & STAMPA T4 ===== */
+  #s-codice .hero{padding:26px 0 22px}
+  #s-codice .hero h1{font-size:26px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  #s-codice .hero h1 .cod{font:700 26px 'Inconsolata',monospace}
+  .cs-wrap{max-width:1120px;margin:0 auto;padding:28px 32px 60px;display:grid;grid-template-columns:1fr 480px;gap:28px;align-items:start}
+  .cs-recap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .cs-recap img{width:100%;height:260px;object-fit:cover;background:#fff;border-bottom:1px solid var(--border)}
+  .cs-head{padding:20px 24px 6px}
+  .cs-head h2{font:600 23px 'Poppins',sans-serif;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .cs-head h2 .cod{font:700 23px 'Inconsolata',monospace;color:var(--blue)}
+  .cs-ok{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font:600 13px 'Poppins',sans-serif;color:var(--ok);background:var(--ok-bg);border-radius:99px;padding:6px 14px}
+  .cs-ok svg{width:16px;height:16px;fill:var(--ok)}
+  .cs-dl{padding:8px 24px 20px}
+  .cs-dl .r{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:14px 0;border-bottom:1px solid #EEF1F6}
+  .cs-dl .r:last-child{border-bottom:none}
+  .cs-dl .k{font:600 12px 'Inconsolata',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+  .cs-dl .v{font:600 18px 'Poppins',sans-serif;text-align:right}
+  .cs-dl .v.code{font:700 22px 'Inconsolata',monospace;color:var(--blue);letter-spacing:.05em}
+  .cs-side{position:sticky;top:24px}
+  .cs-ticket{background:#E9ECF2;border:1px solid var(--border);border-radius:16px;padding:22px 22px 0;position:relative}
+  .cs-ticket .cap{font:600 11px 'Inconsolata',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);text-align:center;margin-bottom:14px}
+  .cs-perf{height:22px;margin:0 -22px;background:radial-gradient(circle 11px at 11px 50%, transparent 10px, #E9ECF2 11px) left/22px 22px repeat-x}
+  .cs-act{padding:18px 0 22px;text-align:center}
+  .cs-print{width:100%;height:56px;border:none;border-radius:12px;cursor:pointer;background:var(--blue);color:#fff;font:600 16px 'Poppins',sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:background .15s;box-shadow:0 6px 22px rgba(29,111,224,.3)}
+  .cs-print:hover{background:#1A5FC4}
+  .cs-print:focus-visible{outline:3px solid var(--blue-neon);outline-offset:3px}
+  .cs-print svg{width:22px;height:22px;fill:#fff}
+  .cs-ticket .hint{font-size:12px;color:var(--ink-2);margin-top:10px}
+  /* etichetta */
+  .label{width:100%;background:#fff;color:#000;border:2px solid #000;border-radius:4px;overflow:hidden;font-family:Arial,'Roboto',sans-serif}
+  .lbl-top{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 16px;border-bottom:4px solid #000;gap:12px}
+  .lbl-tl{display:flex;flex-direction:column;gap:10px}
+  .lbl-carrier{font-weight:700;font-size:15px;letter-spacing:.02em}
+  .lbl-qr{line-height:0}
+  .lbl-big{text-align:right;font-weight:800;font-size:34px;line-height:1.02}
+  .lbl-big span{display:block;font-size:19px;font-weight:700;margin-top:2px}
+  .lbl-from,.lbl-to{padding:12px 16px}
+  .lbl-from{border-bottom:1px solid #000}
+  .lbl-to{border-bottom:4px solid #000}
+  .lbl-tag{font-size:11px;letter-spacing:.12em;font-weight:600}
+  .lbl-name{font-weight:800;font-size:18px;margin:3px 0 2px}
+  .lbl-to div,.lbl-from div{font-size:15px}
+  .lbl-torow{display:flex;justify-content:space-between;align-items:baseline}
+  .lbl-city{font-weight:800;font-size:16px}
+  .lbl-bc{padding:14px 16px 8px;border-bottom:4px solid #000;text-align:center}
+  .lbl-bc .bc{width:100%;height:70px;display:block}
+  .lbl-bcnum{font-family:'Inconsolata',monospace;font-weight:700;font-size:16px;letter-spacing:.16em;margin-top:6px}
+  .lbl-bottom{display:flex;justify-content:space-between;padding:10px 16px;font-weight:700;font-size:16px}
+  .print-only{display:none}
+  @media (max-width:940px){.cs-wrap{grid-template-columns:1fr}.cs-side{position:static}}
+  @media print{
+    body > *{display:none!important}
+    #print-sheet{display:block!important}
+    #print-sheet .label{width:110mm;margin:0 auto;border:2px solid #000}
+    html,body{background:#fff}
+    @page{size:auto;margin:10mm}
+  }
+
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}.safety-rail-fill{transition:none!important}}
+  @media (max-width:520px){.global-notices{left:16px;right:16px;top:16px;max-width:none;align-items:stretch}.active-session-notice{width:100%}}
+  @media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.cols{display:none}
+    .row{grid-template-columns:70px 1fr 90px;gap:10px}.op,.dest{display:none}}
+  /* Schermata Turno completato */
+  #s-fine-turno{min-height:100vh;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--navy) 30%,var(--navy-2) 100%);padding:24px}
+  .ft-card{background:var(--surface);border-radius:18px;padding:40px 44px;max-width:520px;width:100%;
+    text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.4)}
+  .ft-badge{width:64px;height:64px;border-radius:50%;background:var(--ok-bg);color:var(--ok);
+    display:grid;place-items:center;margin:0 auto 18px;font-size:32px;font-weight:800}
+  .ft-card h1{font:600 28px 'Poppins',sans-serif;color:var(--ink)}
+  .ft-sub{color:var(--ink-2);font-size:14px;margin-top:8px}
+  .ft-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0}
+  .ft-stat{border:1px solid var(--border);border-radius:12px;padding:16px 8px}
+  .ft-stat .n{font:700 32px 'Poppins',sans-serif;color:var(--ink)}
+  .ft-stat.ok .n{color:var(--ok)} .ft-stat.ko .n{color:var(--ko)}
+  .ft-stat .l{font-size:12px;color:var(--ink-2);margin-top:4px;line-height:1.3}
+  .ft-btn{width:100%;min-height:52px;border:none;border-radius:12px;background:var(--blue);color:#fff;
+    font:600 16px 'Poppins',sans-serif;cursor:pointer;transition:filter .15s}
+  .ft-btn:hover{filter:brightness(1.1)}
+  .ft-btn:focus-visible{outline:3px solid var(--blue-neon);outline-offset:3px}
+  /* Pulsante logout nella home (hero navy) */
+  .hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+  .logout-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:9px;padding:7px 14px;
+    font:600 13px 'Poppins',sans-serif;cursor:pointer;transition:background .15s,border-color .15s}
+  .logout-btn:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5)}
+  .logout-btn:focus-visible{outline:3px solid var(--blue-neon);outline-offset:2px}
+  .logout-btn svg{width:15px;height:15px;fill:currentColor}
+  /* ===== Pannello laterale Assistente (chatbot) ===== */
+  .chat-panel{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);z-index:60;
+    background:var(--surface);border-left:1px solid var(--border);box-shadow:-14px 0 46px rgba(13,20,40,.22);
+    display:flex;flex-direction:column}
+  .chat-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;
+    background:var(--navy);color:#fff}
+  .chat-ttl{font:600 17px 'Poppins',sans-serif}
+  .chat-sub{font-size:12px;color:#B6C4DE;margin-top:2px}
+  .chat-close{background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:8px;
+    cursor:pointer;font-size:14px;line-height:1}
+  .chat-close:hover{background:rgba(255,255,255,.24)}
+  .chat-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+  .chat-vuoto{color:var(--ink-2);font-size:13px;text-align:center;margin:auto;max-width:260px;line-height:1.5}
+  .msg{max-width:88%;padding:11px 14px;border-radius:12px;font-size:14px;line-height:1.5;white-space:pre-wrap;
+    word-wrap:break-word}
+  .msg.user{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+  .msg.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--border);color:var(--ink);
+    border-bottom-left-radius:4px}
+  .msg.errore{background:var(--red-bg);border-color:#F2B8BF;color:#8F1727}
+  .msg.attesa{color:var(--ink-2);font-style:italic}
+  .chat-rec{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--red-bg);
+    border-top:1px solid #F2B8BF;font-size:13px;color:#8F1727}
+  .rec-dot{width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulseRec 1s infinite}
+  @keyframes pulseRec{0%,100%{opacity:1}50%{opacity:.25}}
+  .chat-rec button{margin-left:auto;border:1px solid #8F1727;background:#fff;color:#8F1727;border-radius:8px;
+    padding:5px 12px;font:600 12px 'Poppins',sans-serif;cursor:pointer}
+  .chat-input{display:flex;align-items:flex-end;gap:8px;padding:14px;border-top:1px solid var(--border);
+    background:var(--surface)}
+  .chat-input textarea{flex:1;resize:none;max-height:120px;border:1px solid var(--border);border-radius:10px;
+    padding:11px 12px;font:400 14px 'Roboto',sans-serif;color:var(--ink);outline:none}
+  .chat-input textarea:focus{border-color:var(--blue)}
+  .chat-ico{width:42px;height:42px;flex:none;border-radius:10px;border:1px solid var(--border);background:#fff;
+    cursor:pointer;display:grid;place-items:center}
+  .chat-ico svg{width:19px;height:19px;fill:var(--ink-2)}
+  .chat-ico:hover{border-color:var(--blue)} .chat-ico:hover svg{fill:var(--blue)}
+  .chat-ico.invia{background:var(--blue);border-color:var(--blue)} .chat-ico.invia svg{fill:#fff}
+  .chat-ico.invia:hover{filter:brightness(1.1)}
+  .chat-ico.rec{background:var(--red);border-color:var(--red)} .chat-ico.rec svg{fill:#fff}
+  .chat-ico:disabled{opacity:.45;cursor:not-allowed}
+  .chat-ico:focus-visible,.chat-close:focus-visible{outline:3px solid var(--blue-neon);outline-offset:2px}
+  @media (max-width:520px){.chat-panel{width:100vw}}
+
+  /* ===== spia backend (LED) — bordo in basso a sinistra, fuori dal flusso ===== */
+  #be-led{position:fixed;left:14px;bottom:14px;z-index:60;display:flex;align-items:center;gap:7px;
+    padding:6px 10px 6px 8px;border-radius:99px;background:rgba(13,20,40,.72);border:1px solid var(--glass-line);
+    backdrop-filter:blur(6px);pointer-events:none;user-select:none}
+  #be-led .bulb{width:9px;height:9px;border-radius:50%;background:#6B7280;box-shadow:none;transition:background .2s,box-shadow .2s}
+  #be-led .txt{font:700 10px 'Inconsolata',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+  #be-led.vivo .bulb{background:#22C55E;box-shadow:0 0 7px rgba(34,197,94,.9)}
+  #be-led.mezzo .bulb{background:#F59E0B;box-shadow:0 0 7px rgba(245,158,11,.85)}
+  #be-led.morto .bulb{background:var(--ko);box-shadow:0 0 7px rgba(220,38,38,.75)}
+  /* niente spia sul video di intro né sul login: schermate a tutto schermo, la spia
+     serve all'operatore quando lavora (home, picking, assemblaggio, collaudo) */
+  #s-intro:not([hidden]) ~ #be-led,
+  #s-login:not([hidden]) ~ #be-led{display:none}
+  @media print{#be-led{display:none}}
+</style>
+</head>
+<body>
+
+<div class="global-notices">
+  <div class="active-session-notice" id="active-session-notice" role="status" hidden></div>
+</div>
+
+<button id="s-intro" aria-label="Salta l'introduzione">
+  <video id="vid" src="../intro/intro-finale-1080p.mp4" poster="../intro/poster.jpg" autoplay muted playsinline></video>
+  <div class="tap"><span>Tocca per saltare</span></div>
+</button>
+
+<section id="s-login" hidden>
+  <div class="l-brand" aria-hidden="true">
+    <div class="claim">
+      <div class="eyebrow">Electronics</div>
+      <h2>La tua postazione,<br>le tue commesse.</h2>
+    </div>
+    <div class="rails"><i></i><i></i></div>
+  </div>
+  <div class="l-form">
+    <form class="form-box" id="login-form" novalidate>
+      <h1>Accesso operatore</h1>
+      <p class="sub">Entra per vedere le commesse del tuo turno.</p>
+      <div class="field">
+        <label for="opcode">Codice operatore</label>
+        <input id="opcode" placeholder="es. OP1" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="pin">PIN</label>
+        <input id="pin" type="password" inputmode="numeric" placeholder="••••" autocomplete="current-password" required>
+      </div>
+      <p class="err" id="login-err">Codice operatore o PIN non validi.</p>
+      <button class="btn" type="submit">Accedi</button>
+      <p class="login-note">Postazione assemblaggio</p>
+    </form>
+  </div>
+</section>
+
+<section id="s-home" hidden>
+  <div class="hero">
+    <svg class="circuits" aria-hidden="true">
+      <defs>
+        <pattern id="pcb" width="220" height="180" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <path d="M10 30 h60 l20 20 v40"/>
+            <path d="M200 20 v50 l-30 30 h-50"/>
+            <path d="M40 160 h70 l25 -25"/>
+            <path d="M150 150 v-30 l30 -30 h30"/>
+          </g>
+          <g fill="#2C4170">
+            <circle cx="10" cy="30" r="4"/><circle cx="90" cy="90" r="4"/>
+            <circle cx="200" cy="20" r="4"/><circle cx="120" cy="100" r="4"/>
+            <circle cx="40" cy="160" r="4"/><circle cx="135" cy="135" r="4"/>
+            <circle cx="150" cy="150" r="4"/><circle cx="210" cy="90" r="4"/>
+          </g>
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <rect x="95" y="40" width="26" height="14" rx="2"/>
+            <path d="M98 40 v-8 M106 40 v-8 M114 40 v-8 M98 54 v8 M106 54 v8 M114 54 v8"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#pcb)"/>
+    </svg>
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Electronics · Postazione assemblaggio</div>
+          <h1 id="welcome">Bentornato</h1>
+        </div>
+        <div class="hero-right">
+          <div class="who" id="home-who"></div>
+          <button class="logout-btn" id="reset-btn" type="button" title="Riporta tutte le commesse a Da fare">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>
+            Reset commesse
+          </button>
+          <button class="logout-btn" id="logout-btn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 17v-3H9v-4h7V7l5 5-5 5zM14 2a2 2 0 0 1 2 2v2h-2V4H5v16h9v-2h2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9z"/></svg>
+            Esci
+          </button>
+        </div>
+      </div>
+      <div class="kpis">
+        <div class="kpi open"><div class="l">Commesse aperte</div><div class="n" id="k-open">10</div></div>
+        <div class="kpi"><div class="l">Commesse chiuse</div><div class="n" id="k-closed">0</div></div>
+        <div class="kpi ok"><div class="l">Eseguite correttamente</div><div class="n" id="k-ok">0</div></div>
+        <div class="kpi ko"><div class="l">Failate</div><div class="n" id="k-ko">0</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="chips" role="group" aria-label="Filtra commesse">
+      <button class="chip" data-f="all" aria-pressed="true">Tutte</button>
+      <button class="chip" data-f="F" aria-pressed="false">Facili</button>
+      <button class="chip" data-f="D" aria-pressed="false">Difficili</button>
+    </div>
+    <div class="panel">
+      <div class="panel-head">Da svolgere <span class="count" id="todo-count">10</span></div>
+      <div class="cols"><span>Commessa</span><span>Denominazione</span><span>Operatore / Data / Turno</span><span>Destinazione</span><span style="text-align:center">Stato</span></div>
+      <div id="todo"></div>
+    </div>
+    <div class="panel" id="done-panel">
+      <div class="panel-head">Svolte <span class="count" id="done-count">0</span></div>
+      <div id="done"></div>
+    </div>
+  </div>
+  <button class="fab assistant-control" title="Assistente" aria-label="Apri assistente chatbot">
+    <svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.6 1.3 4.9 3.4 6.5-.1 1-.5 2.4-1.4 3.3 1.8-.2 3.5-1 4.6-1.8 1.1.3 2.2.5 3.4.5 5.5 0 10-3.9 10-8.5S17.5 3 12 3z"/></svg>
+  </button>
+</section>
+
+<section id="s-picking" hidden>
+  <header class="hero">
+    <svg class="circuits" aria-hidden="true">
+      <defs>
+        <pattern id="pcb2" width="220" height="180" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <path d="M10 30 h60 l20 20 v40"/>
+            <path d="M200 20 v50 l-30 30 h-50"/>
+            <path d="M40 160 h70 l25 -25"/>
+            <path d="M150 150 v-30 l30 -30 h30"/>
+          </g>
+          <g fill="#2C4170">
+            <circle cx="10" cy="30" r="4"/><circle cx="90" cy="90" r="4"/>
+            <circle cx="200" cy="20" r="4"/><circle cx="120" cy="100" r="4"/>
+            <circle cx="40" cy="160" r="4"/><circle cx="135" cy="135" r="4"/>
+            <circle cx="150" cy="150" r="4"/><circle cx="210" cy="90" r="4"/>
+          </g>
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <rect x="95" y="40" width="26" height="14" rx="2"/>
+            <path d="M98 40 v-8 M106 40 v-8 M114 40 v-8 M98 54 v8 M106 54 v8 M114 54 v8"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#pcb2)"/>
+    </svg>
+    <div class="hero-inner">
+      <a class="back" href="#" id="pk-back">← Torna alle commesse</a>
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Electronics · Fase T1 · Picking</div>
+          <h1><span class="cod" id="pk-cod"></span><span id="pk-nome"></span><span class="diff F" id="pk-diff"></span></h1>
+        </div>
+        <div class="who who-op"></div>
+      </div>
+      <div class="steps" aria-label="Avanzamento commessa">
+        <span class="step active"><span class="dot"></span>Picking</span><span class="step-sep"></span>
+        <span class="step"><span class="dot"></span>Assemblaggio</span><span class="step-sep"></span>
+        <span class="step"><span class="dot"></span>Collaudo & CQ</span><span class="step-sep"></span>
+        <span class="step"><span class="dot"></span>Codice & stampa</span>
+      </div>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="panel">
+      <div class="panel-head">Distinta base <span class="psum" id="pk-sum"></span></div>
+      <div id="pk-bom"></div>
+    </div>
+    <button class="avanti" id="pk-avanti">Avanti: Assemblaggio →</button>
+  </main>
+  <button class="fab assistant-control" title="Assistente" aria-label="Apri assistente chatbot">
+    <svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.6 1.3 4.9 3.4 6.5-.1 1-.5 2.4-1.4 3.3 1.8-.2 3.5-1 4.6-1.8 1.1.3 2.2.5 3.4.5 5.5 0 10-3.9 10-8.5S17.5 3 12 3z"/></svg>
+  </button>
+</section>
+
+<section id="s-assemblaggio" hidden>
+  <header class="hero">
+    <svg class="circuits" aria-hidden="true">
+      <defs>
+        <pattern id="pcb3" width="220" height="180" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <path d="M10 30 h60 l20 20 v40"/><path d="M200 20 v50 l-30 30 h-50"/>
+            <path d="M40 160 h70 l25 -25"/><path d="M150 150 v-30 l30 -30 h30"/>
+          </g>
+          <g fill="#2C4170">
+            <circle cx="10" cy="30" r="4"/><circle cx="90" cy="90" r="4"/><circle cx="200" cy="20" r="4"/>
+            <circle cx="120" cy="100" r="4"/><circle cx="40" cy="160" r="4"/><circle cx="135" cy="135" r="4"/>
+            <circle cx="150" cy="150" r="4"/><circle cx="210" cy="90" r="4"/>
+          </g>
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <rect x="95" y="40" width="26" height="14" rx="2"/>
+            <path d="M98 40 v-8 M106 40 v-8 M114 40 v-8 M98 54 v8 M106 54 v8 M114 54 v8"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#pcb3)"/>
+    </svg>
+    <div class="hero-inner">
+      <a class="back" href="#" id="as-back">← Torna al picking</a>
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Electronics · Fase T2 · Assemblaggio</div>
+          <h1><span class="cod" id="as-cod"></span><span id="as-nome"></span><span class="diff F" id="as-diff"></span></h1>
+        </div>
+        <div class="who who-op"></div>
+      </div>
+      <div class="steps" aria-label="Avanzamento commessa">
+        <span class="step done"><span class="dot"></span>Picking</span><span class="step-sep"></span>
+        <span class="step active"><span class="dot"></span>Assemblaggio</span><span class="step-sep"></span>
+        <span class="step"><span class="dot"></span>Collaudo & CQ</span><span class="step-sep"></span>
+        <span class="step"><span class="dot"></span>Codice & stampa</span>
+      </div>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="comp">
+      <div class="comp-top">
+        <img class="foto" id="as-foto" src="" alt="">
+        <div>
+          <div class="cnome" id="as-nome-c"></div>
+          <span class="ccod" id="as-cod-c"></span>
+        </div>
+      </div>
+      <div class="lbl">Posizionamento sulla breadboard</div>
+      <div class="coord" id="as-coord"></div>
+      <span class="polbadge" id="as-pol"></span>
+    </div>
+  </main>
+  <nav class="stepbar" aria-label="Navigazione passi">
+    <div class="stepbar-inner">
+      <span class="safety-rail" aria-hidden="true"><span class="safety-rail-fill" id="as-safety-fill"></span></span>
+      <div class="stepinfo">
+        <span class="px" id="as-x"></span>
+        <span class="guard" id="as-guard" aria-live="polite"></span>
+        <span class="kb">frecce ← → della tastiera</span>
+      </div>
+      <div class="track" id="as-track"></div>
+      <div class="stepmeta">
+        <button class="as-fwd" id="as-fwd" disabled>Osserva il passaggio</button>
+      </div>
+    </div>
+  </nav>
+  <button class="fab assistant-control" id="as-chat-fab" title="Assistente" aria-label="Apri assistente chatbot">
+    <svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.6 1.3 4.9 3.4 6.5-.1 1-.5 2.4-1.4 3.3 1.8-.2 3.5-1 4.6-1.8 1.1.3 2.2.5 3.4.5 5.5 0 10-3.9 10-8.5S17.5 3 12 3z"/></svg>
+  </button>
+</section>
+
+<dialog class="print-preview" id="print-preview" aria-labelledby="pp-title">
+  <div class="pp-head"><h2 id="pp-title">Anteprima di stampa</h2><div class="pp-sub">Etichetta di spedizione</div></div>
+  <div class="pp-sheet"><div class="label" id="pp-label"></div></div>
+  <div class="pp-actions">
+    <button type="button" class="pp-btn ghost" id="pp-annulla">Annulla</button>
+    <button type="button" class="pp-btn primary" id="pp-stampa">Stampa</button>
+  </div>
+</dialog>
+
+<section id="s-collaudo" hidden>
+  <header class="hero">
+    <svg class="circuits" aria-hidden="true">
+      <defs>
+        <pattern id="pcb4" width="220" height="180" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <path d="M10 30 h60 l20 20 v40"/><path d="M200 20 v50 l-30 30 h-50"/>
+            <path d="M40 160 h70 l25 -25"/><path d="M150 150 v-30 l30 -30 h30"/>
+          </g>
+          <g fill="#2C4170">
+            <circle cx="10" cy="30" r="4"/><circle cx="90" cy="90" r="4"/><circle cx="200" cy="20" r="4"/>
+            <circle cx="120" cy="100" r="4"/><circle cx="40" cy="160" r="4"/><circle cx="135" cy="135" r="4"/>
+            <circle cx="150" cy="150" r="4"/><circle cx="210" cy="90" r="4"/>
+          </g>
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <rect x="95" y="40" width="26" height="14" rx="2"/>
+            <path d="M98 40 v-8 M106 40 v-8 M114 40 v-8 M98 54 v8 M106 54 v8 M114 54 v8"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#pcb4)"/>
+    </svg>
+    <div class="hero-inner">
+      <a class="back" href="#" id="cq-back">← Torna all'assemblaggio</a>
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Electronics · Fase T3 · Collaudo & Controllo qualità</div>
+          <h1><span class="cod" id="cq-cod"></span><span id="cq-nome"></span><span class="diff F" id="cq-diff"></span></h1>
+        </div>
+        <div class="who who-op"></div>
+      </div>
+      <div class="steps" aria-label="Avanzamento commessa">
+        <span class="step done"><span class="dot"></span>Picking</span><span class="step-sep"></span>
+        <span class="step done"><span class="dot"></span>Assemblaggio</span><span class="step-sep"></span>
+        <span class="step active"><span class="dot"></span>Collaudo & CQ</span><span class="step-sep"></span>
+        <span class="step"><span class="dot"></span>Codice & stampa</span>
+      </div>
+    </div>
+  </header>
+  <main class="cq-wrap">
+    <div class="col-main">
+      <div class="cq-finita">
+        <img id="cq-foto" src="" alt="">
+        <div class="body">
+          <div class="cq-lbl">Commessa finita — foto di riferimento</div>
+          <div class="cq-fn" id="cq-fn"></div>
+        </div>
+      </div>
+      <div class="cq-panel">
+        <div class="cq-phead">Procedura base <span class="cq-tag base">per tutte</span></div>
+        <ol class="cq-list" id="cq-base"></ol>
+      </div>
+      <div class="cq-panel">
+        <div class="cq-phead">Collaudo & CQ specifici <span class="cq-tag spec" id="cq-tag"></span></div>
+        <div class="cq-sub">Collaudo funzionale</div>
+        <ol class="cq-list" id="cq-coll"></ol>
+        <div class="cq-sub">Controllo posizionale</div>
+        <ol class="cq-list pos" id="cq-pos"></ol>
+      </div>
+    </div>
+    <aside class="cq-side">
+      <div class="cq-card">
+        <h3><span class="dot-ko"></span>Difetti attesi</h3>
+        <div class="cq-dif" id="cq-dif"></div>
+      </div>
+      <div class="cq-card cq-esito">
+        <p>Registra l'esito del collaudo e del controllo qualità.</p>
+        <button class="cq-btn ok" id="cq-ok">✓ Conforme — vai al codice →</button>
+        <button class="cq-btn ko" id="cq-fail">✗ Fail commessa<span class="sub">operatore non riesce a completarla</span></button>
+      </div>
+    </aside>
+  </main>
+  <button class="fab assistant-control" title="Assistente" aria-label="Apri assistente chatbot">
+    <svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.6 1.3 4.9 3.4 6.5-.1 1-.5 2.4-1.4 3.3 1.8-.2 3.5-1 4.6-1.8 1.1.3 2.2.5 3.4.5 5.5 0 10-3.9 10-8.5S17.5 3 12 3z"/></svg>
+  </button>
+</section>
+
+<section id="s-codice" hidden>
+  <header class="hero">
+    <svg class="circuits" aria-hidden="true">
+      <defs>
+        <pattern id="pcb5" width="220" height="180" patternUnits="userSpaceOnUse">
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <path d="M10 30 h60 l20 20 v40"/><path d="M200 20 v50 l-30 30 h-50"/>
+            <path d="M40 160 h70 l25 -25"/><path d="M150 150 v-30 l30 -30 h30"/>
+          </g>
+          <g fill="#2C4170">
+            <circle cx="10" cy="30" r="4"/><circle cx="90" cy="90" r="4"/><circle cx="200" cy="20" r="4"/>
+            <circle cx="120" cy="100" r="4"/><circle cx="40" cy="160" r="4"/><circle cx="135" cy="135" r="4"/>
+            <circle cx="150" cy="150" r="4"/><circle cx="210" cy="90" r="4"/>
+          </g>
+          <g fill="none" stroke="#2C4170" stroke-width="1.5">
+            <rect x="95" y="40" width="26" height="14" rx="2"/>
+            <path d="M98 40 v-8 M106 40 v-8 M114 40 v-8 M98 54 v8 M106 54 v8 M114 54 v8"/>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#pcb5)"/>
+    </svg>
+    <div class="hero-inner">
+      <a class="back" href="#" id="cs-back">← Torna al collaudo</a>
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Electronics · Fase T4 · Codice & stampa</div>
+          <h1><span class="cod" id="cs-cod"></span><span id="cs-nome"></span><span class="diff F" id="cs-diff"></span></h1>
+        </div>
+        <div class="who" id="cs-who"></div>
+      </div>
+      <div class="steps" aria-label="Avanzamento commessa">
+        <span class="step done"><span class="dot"></span>Picking</span><span class="step-sep"></span>
+        <span class="step done"><span class="dot"></span>Assemblaggio</span><span class="step-sep"></span>
+        <span class="step done"><span class="dot"></span>Collaudo & CQ</span><span class="step-sep"></span>
+        <span class="step active"><span class="dot"></span>Codice & stampa</span>
+      </div>
+    </div>
+  </header>
+  <main class="cs-wrap">
+    <section class="cs-recap">
+      <img id="cs-foto" src="" alt="">
+      <div class="cs-head">
+        <h2><span class="cod" id="cs-rcod"></span><span id="cs-rnome"></span></h2>
+        <span class="cs-ok"><svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>Completata e collaudata</span>
+      </div>
+      <div class="cs-dl">
+        <div class="r"><span class="k">Destinazione</span><span class="v" id="cs-dest"></span></div>
+        <div class="r"><span class="k">Data e ora</span><span class="v" id="cs-now"></span></div>
+        <div class="r"><span class="k">Codice destinazione</span><span class="v code" id="cs-code"></span></div>
+      </div>
+    </section>
+    <aside class="cs-side">
+      <div class="cs-ticket">
+        <div class="cap">Etichetta di spedizione</div>
+        <div class="label" id="cs-label"></div>
+        <div class="cs-perf"></div>
+        <div class="cs-act">
+          <button class="cs-print" id="cs-print"><svg viewBox="0 0 24 24"><path d="M6 9V2h12v7h2a2 2 0 0 1 2 2v6h-4v4H6v-4H2v-6a2 2 0 0 1 2-2h2zm2-5v5h8V4H8zm8 12H8v4h8v-4z"/></svg>Chiusura e stampa etichetta</button>
+          <div class="hint">Chiude la commessa e torna alla lista commesse.</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+  <button class="fab assistant-control" title="Assistente" aria-label="Apri assistente chatbot">
+    <svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.9 2 11.7c0 2.6 1.3 4.9 3.4 6.5-.1 1-.5 2.4-1.4 3.3 1.8-.2 3.5-1 4.6-1.8 1.1.3 2.2.5 3.4.5 5.5 0 10-3.9 10-8.5S17.5 3 12 3z"/></svg>
+  </button>
+</section>
+
+<section id="s-fine-turno" hidden>
+  <div class="ft-card">
+    <div class="ft-badge">✓</div>
+    <h1>Turno completato</h1>
+    <p class="ft-sub" id="ft-sub"></p>
+    <div class="ft-stats">
+      <div class="ft-stat"><div class="n" id="ft-tot">0</div><div class="l">Commesse chiuse</div></div>
+      <div class="ft-stat ok"><div class="n" id="ft-ok">0</div><div class="l">Eseguite correttamente</div></div>
+      <div class="ft-stat ko"><div class="n" id="ft-ko">0</div><div class="l">Failate</div></div>
+    </div>
+    <button class="ft-btn" id="ft-nuovo">Inizia nuovo turno</button>
+  </div>
+</section>
+
+<aside id="chat-panel" class="chat-panel" hidden aria-label="Assistente operatore">
+  <header class="chat-head">
+    <div>
+      <div class="chat-ttl">Assistente</div>
+      <div class="chat-sub" id="chat-sub">Domande sul manuale operativo</div>
+    </div>
+    <button class="chat-close" id="chat-close" type="button" aria-label="Chiudi assistente">✕</button>
+  </header>
+  <div class="chat-msgs" id="chat-msgs"></div>
+  <form class="chat-input" id="chat-form">
+    <textarea id="chat-text" rows="1" placeholder="Scrivi la tua domanda…" autocomplete="off"></textarea>
+    <button type="button" class="chat-ico" id="chat-mic" title="Domanda vocale" aria-label="Registra domanda vocale">
+      <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/></svg>
+    </button>
+    <button type="submit" class="chat-ico invia" id="chat-send" title="Invia" aria-label="Invia domanda">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </form>
+</aside>
+
+<div id="print-sheet" class="print-only"><div class="label" id="print-label"></div></div>
+
+<!-- Spia del backend: verde = server e assistente pronti, giallo = server su ma
+     assistente KO (es. chiavi API mancanti), rosso = server irraggiungibile. -->
+<div id="be-led" class="morto" role="status" aria-live="polite" title="Backend: in verifica">
+  <span class="bulb"></span><span class="txt" id="be-led-txt">backend</span>
+</div>
+
+<script src="assembly-navigation.js"></script>
+<script src="assembly-session.js"></script>
+<script src="assistant-context.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const APP_VERSION = "prototype-1";
+let navReady = false;   // true dopo che le variabili del navigatore assemblaggio sono inizializzate
+
+function show(id){
+  if (navReady && id !== "s-assemblaggio") deactivateAssemblyNavigation();
+  for (const s of ["s-intro","s-login","s-home","s-picking","s-assemblaggio","s-collaudo","s-codice","s-fine-turno"]) $(s).hidden = (s !== id);
+  if (id !== "s-intro") $("vid").pause();
+}
+const qs = new URLSearchParams(location.search).get("screen");
+if (qs && qs !== "dati") show("s-" + qs);
+$("vid").addEventListener("ended", () => show("s-login"));
+$("s-intro").addEventListener("click", () => show("s-login"));
+let currentOperator = null, turnoCorrente = null;
+$("login-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const op = $("opcode").value.trim().toUpperCase();
+  const pin = $("pin").value.trim();
+  if (!OPERATORI[op] || OPERATORI[op] !== pin) { $("login-err").classList.add("show"); return; }
+  $("login-err").classList.remove("show");
+  currentOperator = op;
+  turnoCorrente = caricaTurno(op);
+  $("welcome").textContent = "Bentornato, " + op;
+  renderHome();
+  show("s-home");
+});
+// Reset commesse: tutte a "Da fare" per il turno corrente (comodo per rodaggio/video).
+$("reset-btn").addEventListener("click", () => {
+  if (!turnoCorrente) return;
+  if (!confirm("Riportare TUTTE le commesse a 'Da fare'?")) return;
+  turnoCorrente.stato = {};
+  const tutti = caricaOperatori(); tutti[currentOperator] = turnoCorrente; salvaOperatori(tutti);
+  const attiva = assemblyStore.current();
+  if (attiva?.executionId) assemblyStore.end(attiva.executionId);   // niente "sessione ripristinata"
+  fetch("/api/vlm/reset", { method: "POST" }).catch(() => {});      // azzera anche il ponte VLM
+  vlmStato = {}; applyVlm();                                        // pallini neutri subito
+  renderHome();
+});
+// Logout: torna al login (lo stato del turno resta salvato per operatore).
+$("logout-btn").addEventListener("click", () => {
+  currentOperator = null; turnoCorrente = null;
+  $("opcode").value = ""; $("pin").value = "";
+  $("login-err").classList.remove("show");
+  chiudiChat(); chatMsgs.innerHTML = "";                 // conversazione pulita per il prossimo operatore
+  fetch("/api/reset", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ sessione: (typeof asExecution === "object" && asExecution) ? asExecution.executionId : sessioneRiserva })
+  }).catch(() => {});
+  show("s-login");
+});
+
+const COMMESSE = [
+  {id:"F2", nome:"Semaforo 3 LED", dest:"Torino", done:false},
+  {id:"F3", nome:"Dimmer a trimmer", dest:"Bari", done:false},
+  {id:"F4", nome:"Esposimetro a LDR", dest:"Milano", done:false},
+  {id:"F5", nome:"Miscelatore RGB", dest:"Napoli", done:false},
+  {id:"D1", nome:"Allarme acustico a pulsante", dest:"Firenze", done:false},
+  {id:"D2", nome:"Sensore crepuscolare", dest:"Palermo", done:false},
+  {id:"D4", nome:"Timer a spegnimento ritardato", dest:"Genova", done:false},
+  {id:"D5", nome:"Opto-isolatore a pulsante (4N35)", dest:"Verona", done:false},
+  {id:"F1", nome:"Spia luminosa a pulsante", dest:"Bologna", done:false},
+  {id:"D3", nome:"Lampeggiatore alternato", dest:"Venezia", done:false},
+];
+const todo = $("todo"), done = $("done");
+
+// ===== Multi-operatore, turni e destinazioni casuali =====
+const OPERATORI = { OP1:"1111", OP2:"2222", OP3:"3333" };
+const OP_KEY = "sf-operatori-v1";
+// Elenco città → codice destinazione (7 cifre); il CAP sono le ultime 5 cifre del codice.
+const CITTA = [
+  {n:"Ancona",code:"0160100"},{n:"Aosta",code:"0211100"},{n:"Arezzo",code:"0352100"},{n:"Ascoli Piceno",code:"0463100"},
+  {n:"Asti",code:"0514100"},{n:"Bari",code:"0670100"},{n:"Bergamo",code:"0724100"},{n:"Bologna",code:"0840100"},
+  {n:"Bolzano",code:"0939100"},{n:"Brescia",code:"1025100"},{n:"Cagliari",code:"1109100"},{n:"Caserta",code:"1281100"},
+  {n:"Catania",code:"1395100"},{n:"Catanzaro",code:"1488100"},{n:"Como",code:"1522100"},{n:"Cosenza",code:"1687100"},
+  {n:"Cremona",code:"1726100"},{n:"Ferrara",code:"1844100"},{n:"Firenze",code:"1950100"},{n:"Foggia",code:"2071100"},
+  {n:"Forlì",code:"2147100"},{n:"Genova",code:"2216100"},{n:"Grosseto",code:"2358100"},{n:"La Spezia",code:"2419100"},
+  {n:"Latina",code:"2504100"},{n:"Lecce",code:"2673100"},{n:"Livorno",code:"2757100"},{n:"Lucca",code:"2855100"},
+  {n:"Mantova",code:"2946100"},{n:"Messina",code:"3098100"},{n:"Milano",code:"3120100"},{n:"Modena",code:"3241100"},
+  {n:"Napoli",code:"3380100"},{n:"Novara",code:"3428100"},{n:"Padova",code:"3535100"},{n:"Palermo",code:"3690100"},
+  {n:"Parma",code:"3743100"},{n:"Perugia",code:"3806100"},{n:"Pescara",code:"3965100"},{n:"Piacenza",code:"4029100"},
+  {n:"Pisa",code:"4156100"},{n:"Ravenna",code:"4248100"},{n:"Reggio Calabria",code:"4389100"},{n:"Rimini",code:"4447900"},
+  {n:"Roma",code:"4500100"},{n:"Salerno",code:"4684100"},{n:"Torino",code:"4710100"},{n:"Trento",code:"4838100"},
+  {n:"Venezia",code:"4930100"},{n:"Verona",code:"5037100"}
+];
+function caricaOperatori(){ try { return JSON.parse(localStorage.getItem(OP_KEY)) || {}; } catch { return {}; } }
+function salvaOperatori(o){ try { localStorage.setItem(OP_KEY, JSON.stringify(o)); } catch {} }
+function dueCifre(n){ return String(n).padStart(2,"0"); }
+function dataOggiISO(){ const d=new Date(); return `${d.getFullYear()}-${dueCifre(d.getMonth()+1)}-${dueCifre(d.getDate())}`; }
+function dataOggiIT(){ const d=new Date(); return `${dueCifre(d.getDate())}-${dueCifre(d.getMonth()+1)}-${d.getFullYear()}`; }
+
+const numCommessa = id => parseInt(id.slice(1), 10);
+function mescola(a){ for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+// Turno = { giorno, numeroTurno, dest:{id:{n,code}}, stato:{id:"OK"|"KO"} }
+function nuovoTurno(op){
+  const tutti = caricaOperatori();
+  const prec = tutti[op];
+  const oggi = dataOggiISO();
+  const numero = (prec && prec.giorno === oggi) ? (prec.numeroTurno || 0) + 1 : 1;   // riparte da 1 a ogni nuovo giorno
+  const citta = mescola(CITTA.slice()).slice(0, COMMESSE.length);                     // 10 destinazioni casuali distinte
+  const dest = {}; COMMESSE.forEach((c,i) => dest[c.id] = citta[i]);
+  const t = { giorno: oggi, numeroTurno: numero, dest, stato: {} };
+  tutti[op] = t; salvaOperatori(tutti);
+  return t;
+}
+function caricaTurno(op){
+  const prec = caricaOperatori()[op];
+  if (!prec || !prec.dest) return nuovoTurno(op);
+  const fatte = Object.keys(prec.stato || {}).length;
+  if (fatte >= COMMESSE.length) return nuovoTurno(op);   // turno completato → nuovo turno (auto-reset al rientro)
+  return prec;                                            // turno in corso → riprendi
+}
+function salvaEsito(id, esito){
+  turnoCorrente.stato[id] = esito;
+  const tutti = caricaOperatori(); tutti[currentOperator] = turnoCorrente; salvaOperatori(tutti);
+}
+function turnoCompleto(){ return Object.keys(turnoCorrente.stato).length >= COMMESSE.length; }
+
+let ok = 0, ko = 0, ordineCasuale = [];
+
+function aggiornaIntestazioni(){
+  const dt = dataOggiIT(), tn = "T" + turnoCorrente.numeroTurno;
+  $("home-who").innerHTML = `${dt} · Turno <b>${tn}</b>`;
+  document.querySelectorAll(".who-op").forEach(el => el.innerHTML = `${currentOperator} · ${dt} · Turno <b>${tn}</b>`);
+  $("cs-who").innerHTML = `${currentOperator} · <span id="cs-hnow"></span> · Turno <b>${tn}</b>`;
+}
+
+function row(c){
+  const b = document.createElement("button");
+  b.className = "row"; b.dataset.diff = c.id[0]; b.dataset.id = c.id;
+  const stato = c.done ? `<span class="stato ${c.esito.toLowerCase()}">${c.esito}</span>`
+                       : `<span class="stato todo">Da fare</span>`;
+  b.innerHTML = `<span class="code">${c.id}<small>${c.id[0]==="F"?"facile":"difficile"}</small></span>
+    <span class="name">${c.nome}</span>
+    <span class="op">${currentOperator} · ${dataOggiIT()} · T${turnoCorrente.numeroTurno}</span>
+    <span class="dest">${c.dest}</span>${stato}`;
+  if(!c.done) b.addEventListener("click", ()=> openPicking(c));
+  else b.disabled = true;
+  return b;
+}
+function ordinaTodo(ids){
+  const perId = new Map([...todo.children].map(r => [r.dataset.id, r]));
+  for (const id of ids){ const r = perId.get(id); if (r) todo.appendChild(r); }
+}
+// Costruisce la home per l'operatore/turno correnti. Chiamata al login e a ogni nuovo turno.
+function renderHome(){
+  faseCorrente = "T0";
+  todo.innerHTML = ""; done.innerHTML = "";
+  for (const c of COMMESSE){
+    const esito = turnoCorrente.stato[c.id];
+    if (esito === "OK" || esito === "KO"){ c.done = true; c.esito = esito; }
+    else { c.done = false; delete c.esito; }
+    c.dest = turnoCorrente.dest[c.id].n;   // destinazione casuale del turno
+  }
+  ok = COMMESSE.filter(c => c.esito === "OK").length;
+  ko = COMMESSE.filter(c => c.esito === "KO").length;
+  COMMESSE.filter(c => c.done).forEach(c => done.appendChild(row(c)));
+  const daSvolgere = mescola(COMMESSE.filter(c => !c.done).slice());   // ordine casuale
+  daSvolgere.forEach(c => todo.appendChild(row(c)));
+  ordineCasuale = daSvolgere.map(c => c.id);
+  for (const x of document.querySelectorAll(".chip")) x.setAttribute("aria-pressed", x.dataset.f === "all" ? "true" : "false");
+  for (const r of document.querySelectorAll(".row")) r.style.display = "";
+  aggiornaIntestazioni();
+  refresh();
+}
+document.querySelector(".chips").addEventListener("click", e => {
+  const ch = e.target.closest(".chip"); if (!ch) return;
+  for (const x of document.querySelectorAll(".chip")) x.setAttribute("aria-pressed","false");
+  ch.setAttribute("aria-pressed","true");
+  const f = ch.dataset.f;
+  if (f === "all"){
+    ordinaTodo(ordineCasuale);              // "Tutte" → ripristina l'ordine casuale
+  } else {
+    const idsTodo = [...todo.children].map(r => r.dataset.id);
+    const crescenti = idsTodo.filter(id => id[0] === f).sort((a, b) => numCommessa(a) - numCommessa(b));
+    const resto = idsTodo.filter(id => id[0] !== f);
+    ordinaTodo([...crescenti, ...resto]);   // filtro → crescente per numero
+  }
+  for (const r of document.querySelectorAll(".row"))
+    r.style.display = (f === "all" || r.dataset.diff === f) ? "" : "none";
+});
+function refresh(){
+  const t = todo.children.length, d = done.children.length;
+  $("todo-count").textContent = t; $("done-count").textContent = d;
+  $("k-open").textContent = t; $("k-closed").textContent = d;
+  $("k-ok").textContent = ok; $("k-ko").textContent = ko;
+}
+// Schermata di fine turno + avvio nuovo turno.
+function mostraFineTurno(){
+  const esiti = Object.values(turnoCorrente.stato);
+  $("ft-tot").textContent = esiti.length;
+  $("ft-ok").textContent = esiti.filter(v => v === "OK").length;
+  $("ft-ko").textContent = esiti.filter(v => v === "KO").length;
+  $("ft-sub").textContent = `${currentOperator} · ${dataOggiIT()} · Turno T${turnoCorrente.numeroTurno}`;
+  show("s-fine-turno");
+}
+$("ft-nuovo").addEventListener("click", () => {
+  turnoCorrente = nuovoTurno(currentOperator);
+  renderHome();
+  show("s-home");
+});
+
+const FOTO = {
+  "BTN":"Bottone pulsante tattile.png", "R220":"Resistenza 220.png", "R10k":"Resistenza 10k.png", "R5k1":"Resistenza 5k1.png",
+  "R100k":"Resistenza 100k.png", "LED-R":"LED rosso.png", "LED-Y":"LED giallo.png", "LED-G":"LED verde.png",
+  "LED-B":"LED blu.png", "LED-RGB":"LED RGB.png", "POT":"Trimmer 10k.png",
+  "C-EL100":"Condensatore.png", "Q1":"Transistor.png", "BUZ-A":"Buzzer attivo.png",
+  "LDR":"Fotoresistenza LDR.png", "DIO":"Diodo.png", "OPTO":"Optoaccoppiatore.png",
+  "CAV-R":"Cavetto rigido rosso.jpeg", "CAV-B":"Cavetto rigido blu.jpeg", "CAV-BF":"Cavetto flessibile blu.jpeg",
+  "CAV-G":"Cavetto rigido verde.jpeg", "CAV-O":"Cavetto rigido arancione.jpeg"
+};
+const BOMS = {
+  F1:[["BTN","Pulsante tattile 4 pin",1],["R220","Resistenza 220 Ω",1],["LED-R","LED rosso 5 mm",1],
+      ["CAV-R","Cavetto rosso rigido (+6V)",1],["CAV-B","Cavetto blu rigido (GND)",1]],
+  F2:[["BTN","Pulsante tattile 4 pin",1],["R220","Resistenza 220 Ω",3],["LED-R","LED rosso 5 mm",1],
+      ["LED-Y","LED giallo 5 mm",1],["LED-G","LED verde 5 mm",1],["CAV-R","Cavetto rosso rigido (+6V)",1]],
+  F3:[["POT","Trimmer 10 kΩ (3386P)",1],["R220","Resistenza 220 Ω",1],["LED-B","LED blu 5 mm",1],
+      ["CAV-R","Cavetti rossi rigidi (+6V)",2]],
+  F4:[["LDR","Fotoresistenza CDS-55",1],["R220","Resistenza 220 Ω",1],["LED-G","LED verde 5 mm",1],
+      ["CAV-BF","Cavetto blu flessibile (GND)",1]],
+  F5:[["LED-RGB","LED RGB 5 mm (catodo comune)",1],["R220","Resistenza 220 Ω",3],
+      ["CAV-R","Cavetto rosso rigido (+6V)",1],["CAV-BF","Cavetto blu flessibile (GND)",1]],
+  D1:[["BTN","Pulsante tattile 4 pin",1],["R5k1","Resistenza 5.1 kΩ (base)",1],["Q1","Transistor PN2222 (TO-92)",1],
+      ["BUZ-A","Buzzer attivo",1],["LED-R","LED rosso 5 mm",1],["R220","Resistenza 220 Ω",1],
+      ["CAV-R","Cavetti rossi (+6V)",2],["CAV-G","Cavetto verde rigido (collettore)",1],["CAV-BF","Cavetto blu flessibile (GND)",1]],
+  D2:[["R100k","Resistenza 100 kΩ",1],["LDR","Fotoresistenza CDS-55",1],["Q1","Transistor PN2222 (TO-92)",1],
+      ["LED-B","LED blu 5 mm",1],["R220","Resistenza 220 Ω",1],
+      ["CAV-G","Cavetto verde rigido (collettore)",1],["CAV-BF","Cavetto blu flessibile (GND)",1]],
+  D3:[["Q1","Transistor PN2222 (TO-92)",2],["C-EL100","Cond. elettrolitico 100 µF",2],["R10k","Resistenza 10 kΩ",2],
+      ["R220","Resistenza 220 Ω",2],["LED-R","LED rosso 5 mm",1],["LED-B","LED blu 5 mm",1],
+      ["CAV-BF","Cavetti blu flessibili (GND)",2]],
+  D4:[["BTN","Pulsante tattile 4 pin",1],["DIO","Diodo 1N4007",1],["C-EL100","Cond. elettrolitico 100 µF",1],
+      ["R10k","Resistenza 10 kΩ",1],["Q1","Transistor PN2222 (TO-92)",1],["BUZ-A","Buzzer attivo",1],
+      ["CAV-R","Cavetti rossi rigidi (+6V)",2],["CAV-B","Cavetto blu rigido (GND)",1],["CAV-BF","Cavetto blu flessibile (GND)",1],
+      ["CAV-O","Cavetto arancione rigido (collettore)",1]],
+  D5:[["OPTO","Optoaccoppiatore 4N35 (DIP-6)",1],["BTN","Pulsante tattile 4 pin",1],["R220","Resistenza 220 Ω",2],
+      ["LED-R","LED rosso 5 mm (ingresso)",1],["LED-G","LED verde 5 mm (uscita)",1],
+      ["CAV-R","Cavetto rosso rigido (+6V)",1],["CAV-B","Cavetti blu rigidi (GND)",2],["CAV-BF","Cavetto blu flessibile (GND)",1]]
+};
+
+// ===== Cronometri di fase — T1 picking, T2 assemblaggio,
+// T3 collaudo. Nulla a schermo: a commessa chiusa i tre tempi vanno a POST /api/tempi
+// e il server li STAMPA nel terminale. Cronometro PURO: lo start è la prima entrata
+// nella fase, lo stop l'ultimo passaggio alla fase dopo — se torni indietro il tempo
+// continua a correre. Si azzera al cambio di commessa.
+const crono = { id: null, s1: 0, e1: 0, s2: 0, e2: 0, s3: 0, e3: 0 };
+function cronoCommessa(id){                 // commessa diversa = run nuova, tempi a zero
+  if (id && crono.id !== id){
+    crono.id = id;
+    crono.s1 = crono.e1 = crono.s2 = crono.e2 = crono.s3 = crono.e3 = 0;
+  }
+}
+function cronoStart(n, id){                 // solo la PRIMA entrata nella fase
+  cronoCommessa(id);
+  if (!crono["s" + n]) crono["s" + n] = Date.now();
+}
+function cronoStop(n){                      // ogni uscita in avanti riscrive la fine
+  if (crono["s" + n]) crono["e" + n] = Date.now();
+}
+function cronoSec(n){
+  const s = crono["s" + n], e = crono["e" + n];
+  return (s && e && e > s) ? (e - s) / 1000 : 0;
+}
+function cronoInvia(){                      // fine run: OK (stampa etichetta) o KO
+  const corpo = { commessa: crono.id, t1: cronoSec(1), t2: cronoSec(2), t3: cronoSec(3) };
+  crono.id = null;                          // la prossima commessa riparte da zero
+  fetch("/api/tempi", { method: "POST", keepalive: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(corpo) }).catch(() => {});   // server spento = webapp intatta
+}
+
+// Fase corrente del processo: viene allegata alle domande all'assistente.
+let faseCorrente = "T0";
+let curC = null;
+function openPicking(c){
+  faseCorrente = "T1";
+  c = resolveActiveCommission(c);
+  deactivateAssemblyNavigation();
+  curC = c;
+  cronoStart(1, c.id);                      // T1 parte all'apertura del picking
+  $("pk-cod").textContent = c.id;
+  $("pk-nome").textContent = c.nome;
+  const d = $("pk-diff");
+  d.textContent = c.id[0] === "F" ? "Facile" : "Difficile";
+  d.className = "diff " + c.id[0];
+  const bom = BOMS[c.id] || [];
+  const box = $("pk-bom");
+  box.innerHTML = "";
+  const pezzi = bom.reduce((s,r) => s + r[2], 0);
+  $("pk-sum").textContent = "· " + bom.length + " componenti · " + pezzi + " pezzi";
+  for (const [code, nome, qta] of bom){
+    const r = document.createElement("div");
+    r.className = "item";
+    r.innerHTML = `<img class="foto" src="../assets/componenti/${FOTO[code]}" alt="${nome}">
+      <span class="txt"><span class="nome">${nome}</span><small>${code}</small></span>
+      <span class="qta"><b>×${qta}</b><span>quantità</span></span>`;
+    box.appendChild(r);
+  }
+  show("s-picking");
+}
+$("pk-back").addEventListener("click", e => { e.preventDefault(); show("s-home"); });
+$("pk-avanti").addEventListener("click", () => { if (curC) openAssemblaggio(curC); });
+// ===== T2 Assemblaggio — passi dal manuale operativo (MONTAGGIO PASSO-PASSO) =====
+const STEPS_T2 = {
+  F1:[
+    {c:"BTN", n:"Pulsante tattile 4 pin", coord:"e5 · e7 · f5 · f7"},
+    {c:"R220", n:"Resistenza 220 Ω", coord:"g7 – g12"},
+    {c:"LED-R", n:"LED rosso 5 mm", coord:"anodo h12 · catodo h15", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"d5 → +"},
+    {c:"CAV-B", n:"Cavetto blu rigido", coord:"i15 → −"}],
+  F2:[
+    {c:"BTN", n:"Pulsante tattile 4 pin", coord:"e5 · e7 · f5 · f7"},
+    {c:"R220", n:"Resistenza 220 Ω (ramo rosso)", coord:"g7 – g15"},
+    {c:"R220", n:"Resistenza 220 Ω (ramo giallo)", coord:"h7 – h17"},
+    {c:"R220", n:"Resistenza 220 Ω (ramo verde)", coord:"i7 – i19"},
+    {c:"LED-R", n:"LED rosso 5 mm", coord:"anodo j15 · catodo → −", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"LED-Y", n:"LED giallo 5 mm", coord:"anodo j17 · catodo → −", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"LED-G", n:"LED verde 5 mm", coord:"anodo j19 · catodo → −", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"d5 → +"}],
+  F3:[
+    {c:"POT", n:"Trimmer 10 kΩ", coord:"estremi f13 · f15 · cursore g14"},
+    {c:"R220", n:"Resistenza 220 Ω", coord:"i14 – i21"},
+    {c:"LED-B", n:"LED blu 5 mm", coord:"anodo j21 · catodo → −", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"i13 → i3"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"f3 → +"}],
+  F4:[
+    {c:"LDR", n:"Fotoresistenza CDS-55", coord:"un pin → + · altro pin → e11"},
+    {c:"LED-G", n:"LED verde 5 mm", coord:"anodo d11 · catodo d14", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"R220", n:"Resistenza 220 Ω", coord:"b14 – b22"},
+    {c:"CAV-BF", n:"Cavetto blu flessibile", coord:"e22 → −"}],
+  F5:[
+    {c:"LED-RGB", n:"LED RGB 5 mm", coord:"R+ a14 · catodo a15 · G+ a16 · B+ a17", pol:"Gamba lunga = catodo comune (colonna 15)"},
+    {c:"R220", n:"Resistenza 220 Ω (rosso)", coord:"b6 – b14"},
+    {c:"R220", n:"Resistenza 220 Ω (verde)", coord:"c6 – c16"},
+    {c:"R220", n:"Resistenza 220 Ω (blu)", coord:"d6 – d17"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"a6 → +"},
+    {c:"CAV-BF", n:"Cavetto blu flessibile", coord:"e15 → −"}],
+  D1:[
+    {c:"BTN", n:"Pulsante tattile 4 pin", coord:"e2 · e4 · f2 · f4"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"d2 → +"},
+    {c:"R5k1", n:"Resistenza 5.1 kΩ", coord:"c4 – c9"},
+    {c:"Q1", n:"Transistor PN2222", coord:"E b7 · B b9 · C b11", pol:"Verso obbligato — lato piatto (scritte) verso di te"},
+    {c:"CAV-BF", n:"Cavetto blu flessibile", coord:"e7 → −"},
+    {c:"BUZ-A", n:"Buzzer attivo", coord:"− e11 · + e14", pol:"Polarizzato: + segnato sul corpo"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"b14 → +"},
+    {c:"CAV-G", n:"Cavetto verde rigido", coord:"a11 → a41"},
+    {c:"LED-R", n:"LED rosso 5 mm", coord:"catodo d41 · anodo d44", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"R220", n:"Resistenza 220 Ω", coord:"b44 → +"}],
+  D2:[
+    {c:"LDR", n:"Fotoresistenza CDS-55", coord:"− (GND) – e9"},
+    {c:"R100k", n:"Resistenza 100 kΩ", coord:"b9 → +"},
+    {c:"Q1", n:"Transistor PN2222", coord:"E c7 · B c9 · C c11", pol:"Verso obbligato — lato piatto (scritte) verso di te"},
+    {c:"CAV-BF", n:"Cavetto blu flessibile", coord:"e7 → −"},
+    {c:"CAV-G", n:"Cavetto verde rigido", coord:"e11 → e41"},
+    {c:"LED-B", n:"LED blu 5 mm", coord:"anodo d44 · catodo d41", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"R220", n:"Resistenza 220 Ω", coord:"b44 → +"}],
+  D3:[
+    {c:"R220", n:"Resistenza 220 Ω (#1)", coord:"d3 → +"},
+    {c:"LED-R", n:"LED rosso 5 mm (sinistra)", coord:"anodo c3 · catodo c6", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"R10k", n:"Resistenza 10 kΩ (#1)", coord:"a8 → +"},
+    {c:"Q1", n:"Transistor PN2222 (Q1)", coord:"C b6 · B b8 · E b10", pol:"Verso obbligato — lato curvo verso di te"},
+    {c:"C-EL100", n:"Condensatore 100 µF (C1)", coord:"anodo e6 · catodo e18", pol:"Striscia chiara sul corpo = − (catodo)"},
+    {c:"Q1", n:"Transistor PN2222 (Q2)", coord:"E b16 · B b18 · C b20", pol:"Verso obbligato — lato piatto verso di te (specchiato)"},
+    {c:"C-EL100", n:"Condensatore 100 µF (C2)", coord:"anodo d20 · catodo d8", pol:"Striscia chiara sul corpo = − (catodo)"},
+    {c:"R10k", n:"Resistenza 10 kΩ (#2)", coord:"a18 → +"},
+    {c:"LED-B", n:"LED blu 5 mm (destra)", coord:"anodo c24 · catodo c20", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"R220", n:"Resistenza 220 Ω (#2)", coord:"d24 → +"},
+    {c:"CAV-BF", n:"Cavetto blu flessibile", coord:"e10 → −"},
+    {c:"CAV-BF", n:"Cavetto blu flessibile", coord:"e16 → −"}],
+  D4:[
+    {c:"BTN", n:"Pulsante tattile 4 pin", coord:"e3 · e5 · f3 · f5"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"d3 → +"},
+    {c:"DIO", n:"Diodo 1N4007", coord:"anodo d5 · catodo d13", pol:"Banda sul corpo = catodo (−), verso colonna 13"},
+    {c:"C-EL100", n:"Condensatore 100 µF", coord:"+ c13 · − h13", pol:"Striscia chiara sul corpo = − (catodo)"},
+    {c:"CAV-B", n:"Cavetto blu rigido", coord:"i13 → −"},
+    {c:"R10k", n:"Resistenza 10 kΩ", coord:"b13 – b21"},
+    {c:"Q1", n:"Transistor PN2222", coord:"E a19 · B a21 · C a23", pol:"Verso obbligato — lato piatto (scritte) verso di te"},
+    {c:"CAV-BF", n:"Cavetto blu flessibile", coord:"b19 → −"},
+    {c:"CAV-O", n:"Cavetto arancione rigido (collettore)", coord:"b23 → b32"},
+    {c:"BUZ-A", n:"Buzzer attivo", coord:"− e32 · + e35", pol:"Polarizzato: + segnato sul corpo"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"b35 → +"}],
+  D5:[
+    {c:"BTN", n:"Pulsante tattile 4 pin", coord:"e2 · e4 · f2 · f4"},
+    {c:"CAV-R", n:"Cavetto rosso rigido", coord:"d2 → +"},
+    {c:"R220", n:"Resistenza 220 Ω (ingresso)", coord:"d4 – d9"},
+    {c:"LED-R", n:"LED rosso 5 mm (ingresso)", coord:"anodo c9 · catodo c13", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"OPTO", n:"Optoaccoppiatore 4N35", coord:"ingresso e13 · e14 · e15 — uscita g13 · g14 · g15", pol:"Verso obbligato — tacca verso il lato f–j"},
+    {c:"CAV-B", n:"Cavetto blu rigido", coord:"c14 → −"},
+    {c:"LED-G", n:"LED verde 5 mm (uscita)", coord:"catodo h15 · anodo h18", pol:"Gamba lunga = + (anodo) · lato piatto = − (catodo)"},
+    {c:"R220", n:"Resistenza 220 Ω (uscita)", coord:"f18 → +"},
+    {c:"CAV-B", n:"Cavetto blu rigido", coord:"j14 → −"},
+    {c:"CAV-BF", n:"Cavetto blu flessibile", coord:"da − a −"}]
+};
+
+// ===== Ponte VLM: semaforo sui pallini (read-only, poll del registro via API) =====
+let asCommessa = null;
+let vlmStato = {};                       // "n" (1-based) -> {colore, verdetto, motivo}
+let vlmTimer = null;
+
+function vlmClass(index) {
+  const s = vlmStato[String(index + 1)];
+  return s ? " vlm-" + s.colore : "";
+}
+
+function applyVlm() {
+  document.querySelectorAll("#s-assemblaggio .snum").forEach((button, index) => {
+    button.classList.remove("vlm-verde", "vlm-giallo", "vlm-rosso", "vlm-grigio");
+    const s = vlmStato[String(index + 1)];
+    if (s) {
+      button.classList.add("vlm-" + s.colore);
+      button.title = s.verdetto + (s.motivo ? " — " + s.motivo : "");
+    } else {
+      button.removeAttribute("title");
+    }
+  });
+}
+
+async function pollVlm() {
+  if (!asCommessa || $("s-assemblaggio").hidden) return;
+  try {
+    const r = await fetch("/api/vlm/stato?commessa=" + encodeURIComponent(asCommessa));
+    if (r.ok) {
+      const d = await r.json();
+      // solo registri FRESCHI (run in corso o chiusa da <10 min): una run di ieri
+      // non deve tenere i pallini accesi per sempre
+      const fresco = d.aggiornato && (Date.now() / 1000 - d.aggiornato) < 600;
+      vlmStato = fresco ? (d.steps || {}) : {};
+      applyVlm();
+    }
+  } catch (e) { /* VLM spento o server assente: pallini neutri, nessun errore a video */ }
+}
+
+function startVlmPolling() {
+  if (vlmTimer) clearInterval(vlmTimer);
+  vlmStato = {};
+  applyVlm();
+  pollVlm();
+  vlmTimer = setInterval(pollVlm, 2500);
+}
+
+const assemblyStore = AssemblySession.createStore({
+  storage: localStorage,
+  onError: error => document.dispatchEvent(new CustomEvent("sf:storage-error", { detail: error }))
+});
+
+function clearActiveSessionNotice() {
+  $("active-session-notice").hidden = true;
+  $("active-session-notice").textContent = "";
+}
+
+function resolveActiveCommission(requestedCommission) {
+  const active = assemblyStore.current();
+  if (active?.status !== "active" || active.commissionId === requestedCommission.id) {
+    clearActiveSessionNotice();
+    return requestedCommission;
+  }
+  const activeCommission = COMMESSE.find(commission => commission.id === active.commissionId);
+  if (!activeCommission) {
+    clearActiveSessionNotice();
+    return requestedCommission;
+  }
+  $("active-session-notice").textContent = `Sessione attiva ${activeCommission.id} ripristinata.`;
+  $("active-session-notice").hidden = false;
+  return activeCommission;
+}
+
+// Sessione di navigazione: tiene traccia della commessa attiva e dello stato dei passi
+// (serve al controllo anti-salto e alla ripresa dopo un reload). Nessuna misurazione di tempi.
+function ensureNavigationSession(c) {
+  asExecution = assemblyStore.begin({
+    commissionId: c.id,
+    operatorId: currentOperator,
+    appVersion: APP_VERSION,
+    features: { assemblyGuard: true }
+  });
+  return asExecution;
+}
+
+let asCur = 0;
+let asSteps = [];
+let asNavigator = null;
+let asExecution = null;
+let asActivationFrame = 0;
+let asGuardFrame = 0;
+let asRenderedStep = -1;
+let asActivationPending = false;
+navReady = true;   // navigatore inizializzato: show() può ora disattivare in sicurezza
+
+function renderAssemblyStep(index) {
+  asCur = index;
+  const step = asSteps[index];
+  const nome = step.n.replace(/\s*\([^)]*\)/g, "");
+  $("as-foto").src = "../assets/componenti/" + FOTO[step.c];
+  $("as-foto").alt = nome;
+  $("as-nome-c").textContent = nome;
+  $("as-cod-c").textContent = step.c;
+  $("as-pol").textContent = step.pol ? "⚠ " + step.pol : "";
+  $("as-coord").textContent = step.coord;
+}
+
+function renderAssemblyNavigation(state) {
+  if (asRenderedStep !== state.currentIndex) {
+    renderAssemblyStep(state.currentIndex);
+    asRenderedStep = state.currentIndex;
+  }
+  $("as-x").textContent = `Passo ${state.currentIndex + 1} / ${asSteps.length}`;
+  $("as-guard").textContent = state.status === "locked" ? "Osserva il passaggio" : "Passaggio disponibile";
+  $("as-safety-fill").style.width = `${Math.round(state.progress * 100)}%`;
+
+  document.querySelectorAll("#s-assemblaggio .snum").forEach((button, index) => {
+    const isFuture = index > state.maxReached;
+    const isCurrent = index === state.currentIndex;
+    const isTraversed = state.traversed[index];
+    const isAvailable = !isCurrent && !isFuture && !isTraversed;
+    button.className = "snum" + (isCurrent ? " cur" : isTraversed ? " past" : isFuture ? " future" : isAvailable ? " available" : "") + vlmClass(index);
+    button.disabled = isFuture;
+    button.setAttribute("aria-current", isCurrent ? "step" : "false");
+    const ariaState = isCurrent ? "attivo" : isTraversed ? "completato" : isFuture ? "non disponibile" : "disponibile";
+    button.setAttribute("aria-label", `Passo ${index + 1}, ${ariaState}`);
+  });
+
+  document.querySelectorAll("#s-assemblaggio .sline").forEach(line => {
+    line.className = "sline" + (Number(line.dataset.i) <= state.maxReached ? " past" : "");
+  });
+
+  const isLast = state.currentIndex === asSteps.length - 1;
+  $("as-fwd").disabled = state.status === "locked";
+  $("as-fwd").textContent = state.status === "locked"
+    ? "Osserva il passaggio"
+    : isLast ? "Avanti: Collaudo & CQ →" : "Avanti →";
+}
+
+function runAssemblyGuard() {
+  cancelAnimationFrame(asGuardFrame);
+  asGuardFrame = 0;
+  if (!asNavigator || $("s-assemblaggio").hidden || !asNavigator.view(performance.now()).pageActive) return;
+  const frame = () => {
+    asGuardFrame = 0;
+    if (!asNavigator || $("s-assemblaggio").hidden) return;
+    const state = asNavigator.tick(performance.now());
+    renderAssemblyNavigation(state);
+    if (state.status === "locked" && state.pageActive) asGuardFrame = requestAnimationFrame(frame);
+  };
+  asGuardFrame = requestAnimationFrame(frame);
+}
+
+function handleAssemblyResult(result) {
+  renderAssemblyNavigation(asNavigator.view(performance.now()));
+  runAssemblyGuard();
+  if (result.complete && curC) openCollaudo(curC);
+}
+
+function openAssemblaggio(c) {
+  faseCorrente = "T2";
+  c = resolveActiveCommission(c);
+  cancelAnimationFrame(asActivationFrame);
+  cancelAnimationFrame(asGuardFrame);
+  asActivationFrame = 0;
+  asGuardFrame = 0;
+  curC = c;
+  cronoCommessa(c.id);
+  cronoStop(1); cronoStart(2, c.id);        // T1 si chiude qui, T2 parte
+  $("as-cod").textContent = c.id;
+  $("as-nome").textContent = c.nome;
+  const difficulty = $("as-diff");
+  difficulty.textContent = c.id[0] === "F" ? "Facile" : "Difficile";
+  difficulty.className = "diff " + c.id[0];
+  asSteps = STEPS_T2[c.id] || [];
+  asCommessa = c.id;                      // ponte VLM: commessa attiva per il poll
+  ensureNavigationSession(c);
+  const navigatorExecutionId = asExecution.executionId;
+  asRenderedStep = -1;
+
+  const track = $("as-track");
+  track.innerHTML = "";
+  asSteps.forEach((step, index) => {
+    if (index > 0) {
+      const line = document.createElement("span");
+      line.className = "sline";
+      line.dataset.i = index;
+      track.appendChild(line);
+    }
+    const button = document.createElement("button");
+    button.className = "snum";
+    button.textContent = index + 1;
+    button.setAttribute("aria-label", `Vai al passo ${index + 1}`);
+    button.addEventListener("click", () => handleAssemblyResult(asNavigator.goTo(index, performance.now(), "pointer")));
+    track.appendChild(button);
+  });
+
+  asNavigator = AssemblyNavigation.createNavigator({
+    stepCount: asSteps.length,
+    initialState: asExecution.navigator,
+    initialActive: false,
+    now: () => performance.now(),
+    onChange: state => assemblyStore.saveNavigator(navigatorExecutionId, state)
+  });
+  show("s-assemblaggio");
+  startVlmPolling();                      // semaforo VLM sui pallini, ogni 2.5 s
+  renderAssemblyNavigation(asNavigator.view(performance.now()));
+  asActivationPending = true;
+  const activationNavigator = asNavigator;
+  asActivationFrame = requestAnimationFrame(() => {
+    if (asNavigator !== activationNavigator) return;
+    asActivationFrame = requestAnimationFrame(() => {
+      if (asNavigator !== activationNavigator) return;
+      asActivationFrame = 0;
+      if ($("s-assemblaggio").hidden) {
+        asActivationPending = false;
+        return;
+      }
+      asActivationPending = false;
+      const state = asNavigator.setActive(
+        document.visibilityState === "visible" && document.hasFocus(),
+        performance.now()
+      );
+      renderAssemblyNavigation(state);
+      if (state.pageActive) runAssemblyGuard();
+    });
+  });
+}
+
+$("as-fwd").addEventListener("click", () => {
+  if (asNavigator) handleAssemblyResult(asNavigator.next(performance.now(), "pointer"));
+});
+
+window.addEventListener("keydown", event => {
+  if (!asNavigator || $("s-assemblaggio").hidden) return;
+  const target = event.target;
+  const editable = target instanceof HTMLElement && (
+    target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)
+  );
+  const modalOpen = Boolean(document.querySelector("dialog[open], [aria-modal='true']:not([hidden])"));
+  const result = asNavigator.keyDown({ key: event.key, repeat: event.repeat, editable, modalOpen }, performance.now());
+  if (result.reason !== "ignored") event.preventDefault();
+  handleAssemblyResult(result);
+});
+
+window.addEventListener("keyup", event => {
+  if (!asNavigator || $("s-assemblaggio").hidden) return;
+  asNavigator.keyUp(event.key);
+});
+
+function syncAssemblyActivity(active) {
+  if (!asNavigator || $("s-assemblaggio").hidden) return;
+  if (asActivationPending && active) return;
+  if (!active) {
+    cancelAnimationFrame(asGuardFrame);
+    asGuardFrame = 0;
+  }
+  renderAssemblyNavigation(asNavigator.setActive(active, performance.now()));
+  if (active) runAssemblyGuard();
+}
+
+function deactivateAssemblyNavigation() {
+  if (!asNavigator) return;
+  if (!$("s-assemblaggio").hidden) syncAssemblyActivity(false);
+  cancelAnimationFrame(asActivationFrame);
+  cancelAnimationFrame(asGuardFrame);
+  asActivationFrame = 0;
+  asGuardFrame = 0;
+  asActivationPending = false;
+  asNavigator = null;
+}
+
+document.addEventListener("visibilitychange", () => {
+  syncAssemblyActivity(document.visibilityState === "visible" && document.hasFocus());
+});
+window.addEventListener("blur", () => syncAssemblyActivity(false));
+window.addEventListener("focus", () => syncAssemblyActivity(document.visibilityState === "visible"));
+
+$("as-back").addEventListener("click", event => {
+  event.preventDefault();
+  openPicking(curC);
+});
+
+// ===== T3 Collaudo & CQ — fonti: Manuale Operativo Definitivo (sez. 0.6 + collaudo/CQ/difetti per commessa) =====
+const BASE_COLLAUDO = [
+  "Collega la batteria (interruttore ON).",
+  "Esegui il collaudo / controllo qualità sul funzionamento specifico della commessa (es: premere il pulsante, dito sul sensore, cosa deve suonare o accendersi).",
+  "Se NON OK: assicurati che i pezzi siano inseriti bene, a fondo nel foro (circuito non aperto).",
+  "Se NON OK: una correzione alla volta, ricontrolla ogni volta tutti i pin e i versi (polarità). Non scartare al primo tentativo.",
+  "Stacca sempre la batteria prima di rimettere le mani."
+];
+const COMMESSE_CQ = {
+  F1:{funz:"Premi il pulsante → il LED rosso si accende; rilasci → si spegne.",
+    collaudo:["Continuità +6V↔GND a batteria staccata: deve risultare APERTO (no corto).","A riposo: LED spento. Premuto: acceso. Rilasciato: spento. Commutazione netta."],
+    posiz:["Pulsante a cavallo della fessura su col 5 e 7 (ingresso e5, uscita f7).","Resistenza 220 Ω su g7–g12.","LED rosso: anodo h12 (gamba lunga verso la resistenza), catodo h15.","Cavetto rosso da d5, cavetto blu da i15."],
+    difetti:[{c:"DEF-01",d:"LED rosso invertito → resta spento."},{c:"DEF-04",d:"Pulsante ruotato / non a cavallo → sempre acceso o mai."},{c:"DEF-03",d:"Gamba non a fondo → non commuta."}]},
+  F2:{funz:"Un pulsante accende insieme 3 LED (rosso, giallo, verde).",
+    collaudo:["Continuità +6V↔GND aperta a batteria staccata.","Premi = 3 LED accesi insieme; rilascia = tutti spenti."],
+    posiz:["Pulsante a cavallo col 5–7; uscita f7 = nodo N2.","Le 3 resistenze da 220 Ω partono tutte da col 7 (g7/h7/i7) verso col 15/17/19.","LED: anodi su j15/j17/j19 (gamba lunga), catodi dritti nel bus − adiacente.","Cavetto rosso da d5."],
+    difetti:[{c:"DEF-01",d:"Un LED invertito → solo quello resta spento."},{c:"DEF-04",d:"Pulsante ruotato / non a cavallo → nessuno si accende."},{c:"DEF-03",d:"Gamba resistenza non in colonna corretta → ramo aperto."},{c:"DEF-02",d:"Resistenza sbagliata."}]},
+  F3:{funz:"Giri il trimmer col giravite e regoli la luminosità del LED blu (pieno → spento).",
+    collaudo:["LED blu acceso; giri il giravite → la luminosità varia con continuità (pieno ↔ spento)."],
+    posiz:["Trimmer: pin1 f13, cursore g14, estremo libero f15.","Resistenza 220 Ω dal cursore (col14) su i14–i21; LED blu anodo j21.","+6V al pin1 tramite i due cavetti rossi rigidi i13→i3 e f3→+."],
+    difetti:[{c:"DEF-01",d:"LED blu invertito → spento."},{c:"DEF-04",d:"Resistenza non sul cursore (col14) → non regola."},{c:"DEF-03",d:"Pin trimmer non a fondo → circuito aperto."}]},
+  F4:{funz:"Più luce sulla fotoresistenza → LED verde più luminoso (esposimetro proporzionale).",
+    collaudo:["Collaudo a torcia: torcia del telefono sulla fotoresistenza → LED nettamente più luminoso; ombra → più fioco.","Il delta dev'essere netto (non usare «dito vs luce ambiente»)."],
+    posiz:["Fotoresistenza: un pin nel bus + (lato a–e), altro in e11.","LED verde: anodo d11 (verso la fotoresistenza), catodo d14.","Resistenza 220 Ω b14–b22; cavetto blu (GND) da e22."],
+    difetti:[{c:"DEF-01",d:"LED verde invertito → spento."},{c:"DEF-03",d:"Pin fotoresistenza non a fondo → circuito aperto."},{c:"DEF-02",d:"LED non cambia con torcia on/off → fotoresistenza o cablaggio."}]},
+  F5:{funz:"LED RGB a catodo comune: i 3 colori accesi insieme → luce bianca.",
+    collaudo:["Batteria → luce bianca (3 colori insieme).","Togliendo una resistenza sparisce quel colore (individua il ramo)."],
+    posiz:["LED RGB: R+ a14, catodo comune a15 (gamba lunga), G+ a16, B+ a17.","Le 3 resistenze da 220 Ω partono da col6 (bus +) verso col14/16/17 (i 3 anodi).","Cavetto rosso da a6; cavetto blu da e15."],
+    difetti:[{c:"DEF-01",d:"Catodo/anodo del LED RGB scambiati → spento."},{c:"DEF-04",d:"Un R220 non in direzione della gamba corretta → colore assente."},{c:"DEF-04",d:"Gamba del LED RGB su colonna sbagliata → colore errato/assente."},{c:"DEF-02",d:"Resistenza sbagliata."}]},
+  D1:{funz:"Premi il pulsante → suonano insieme buzzer e LED rosso (il transistor fa da interruttore).",
+    collaudo:["Premi = buzzer suona + LED rosso acceso; rilascia = silenzio / spento."],
+    posiz:["Pulsante a cavallo col 2 & 4; transistor E b7 · B b9 · C b11 (lato piatto verso l'operatore); base via resistenza 5.1 kΩ c4–c9.","Buzzer − e11 (collettore), + e14; collettore esteso a11→a41 (cavetto verde).","LED rosso: catodo d41, anodo d44 (→ resistenza 220 Ω b44 → +)."],
+    difetti:[{c:"DEF-01",d:"Transistor E/C scambiati (verso del transistor, lato piatto corretto)."},{c:"DEF-01",d:"Buzzer con polarità invertita → muto (controlla dove va il +)."},{c:"DEF-01",d:"LED rosso invertito → spento."},{c:"DEF-04",d:"Pulsante non a cavallo → non parte."},{c:"DEF-04",d:"Cavo rosso del buzzer posizionato male (deve andare sul + del buzzer)."},{c:"DEF-02",d:"Resistenza sbagliata."}]},
+  D2:{funz:"Buio → LED blu acceso; luce → spento (partitore fotoresistenza/resistenza pilota la base). ⚠ Il GND è portato su entrambi i lati della board.",
+    collaudo:["Collaudo a torcia: buio/ombra → LED acceso; torcia sulla fotoresistenza → spento. Delta netto."],
+    posiz:["Partitore: resistenza 100 kΩ b9→+ (alto) e fotoresistenza −–e9 (basso); nodo comune col9 = base.","Transistor E c7 · B c9 · C c11; collettore esteso e11→e41 (cavetto verde).","LED blu: catodo d41, anodo d44 (→ resistenza 220 Ω b44 → +)."],
+    difetti:[{c:"DEF-04",d:"Partitore invertito (fotoresistenza ↔ resistenza 100 kΩ) → acceso alla luce."},{c:"DEF-01",d:"Transistor E/C scambiati (verso del transistor, lato piatto corretto)."},{c:"DEF-01",d:"LED blu invertito → spento."},{c:"DEF-02",d:"Resistenza sbagliata."}]},
+  D3:{funz:"Multivibratore astabile: i 2 LED lampeggiano alternati (~0,7 Hz).",
+    collaudo:["Batteria → i 2 LED lampeggiano alternati (~1 volta/sec). Nessuno resta fisso.","Se restano fissi/spenti → controlla il verso dei condensatori o i transistor non specchiati."],
+    posiz:["Transistor 1 (C b6 · B b8 · E b10, semicerchio verso l'operatore) e Transistor 2 (E b16 · B b18 · C b20, lato piatto verso l'operatore): devono essere specchiati.","Condensatore 1 e6→e18 (collettore Transistor 1 → base Transistor 2); Condensatore 2 d20→d8 (collettore Transistor 2 → base Transistor 1); striscia sul corpo = catodo (−).","GND degli emettitori da e10 ed e16."],
+    difetti:[{c:"DEF-01",d:"Condensatore o transistor invertiti (polarità) → nessuna oscillazione."},{c:"DEF-01",d:"Transistor non specchiati → niente lampeggio."},{c:"DEF-01",d:"Condensatori non specchiati → niente lampeggio."},{c:"DEF-03",d:"Gamba del transistor non a fondo → ramo aperto."},{c:"DEF-02",d:"Resistenza sbagliata."}]},
+  D4:{funz:"Premi e rilasci → il buzzer suona e continua ~1–2 s, poi tace (condensatore + transistor).",
+    collaudo:["Premi-rilascia: il suono persiste ~1–2 s poi cessa (spegnimento ritardato)."],
+    posiz:["Diodo: anodo d5 → catodo d13 (banda verso col13 = nodo carica).","Condensatore + c13 (basso) e − h13 (alto) a cavallo della fessura; resistenza 10 kΩ b13→b21.","Transistor E a19 · B a21 · C a23. Collettore esteso b23→b32 (cavetto arancione). Buzzer − e32 (collettore), + e35.","Cavetti rossi d3→+ e b35→+; cavetti blu i13→− e b19→−."],
+    difetti:[{c:"DEF-01",d:"Diodo invertito (controlla banda → −)."},{c:"DEF-01",d:"Transistor E/C scambiati (polarità, lato piatto verso operatore)."},{c:"DEF-01",d:"Buzzer con polarità invertita → muto (controlla il +)."},{c:"DEF-01",d:"Condensatore elettrolitico invertito (controlla banda → −)."}]},
+  D5:{funz:"Premi → LED ingresso acceso → il fototransistor conduce → LED uscita acceso (ingresso e uscita isolati dalla fessura).",
+    collaudo:["Premi = LED ingresso e LED uscita accesi insieme (l'uscita segue l'ingresso); rilascia = spenti.","L'uscita è isolata galvanicamente dall'ingresso."],
+    posiz:["Optoaccoppiatore 4N35 su col 13-14-15, tacca verso il lato f–j; ingresso in a–e (col13/14), uscita in f–j (col14/15).","LED ingresso: anodo c9 → catodo c13. LED uscita: catodo h15 (collettore) → anodo h18.","Base col13-alto LIBERA (pin6 non collegato). Resistenza 220 Ω uscita f18→+; cavetti blu c14→− e j14→−."],
+    difetti:[{c:"DEF-04",d:"Verso dell'optoaccoppiatore 4N35 errato → niente."},{c:"DEF-01",d:"LED ingresso / LED uscita invertito → spento."},{c:"DEF-04",d:"Resistenze posizionate male."},{c:"DEF-04",d:"Emettitore ↔ collettore scambiati → LED uscita spento."}]}
+};
+
+function assemblyIsComplete(c) {
+  const active = assemblyStore.current();
+  const steps = active?.navigator?.traversed || [];
+  return active?.commissionId === c.id &&
+    steps.length === (STEPS_T2[c.id] || []).length &&
+    steps.every(Boolean);
+}
+
+function openCollaudo(c) {
+  faseCorrente = "QC";
+  c = resolveActiveCommission(c);
+  if (!assemblyIsComplete(c)) {
+    openAssemblaggio(c);
+    return;
+  }
+  fermaVlm(c.id);            // montaggio finito: il radar non deve più scattare
+  renderCollaudo(c);
+}
+
+// Posa la sentinella di stop nel ponte: il radar la vede nel suo loop e CHIUDE la run
+// (wizard GT + Excel). Radar spento o server giu' = nessun effetto, la webapp prosegue.
+function fermaVlm(commessa){
+  fetch("/api/vlm/stop", { method: "POST", keepalive: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ commessa }) }).catch(() => {});
+}
+
+function renderCollaudo(c){
+  faseCorrente = "T3";
+  c = resolveActiveCommission(c);
+  deactivateAssemblyNavigation();
+  curC = c;
+  cronoCommessa(c.id);
+  cronoStop(2); cronoStart(3, c.id);        // T2 si chiude qui, T3 parte
+  const data = COMMESSE_CQ[c.id] || {funz:"",collaudo:[],posiz:[],difetti:[]};
+  $("cq-cod").textContent = c.id;
+  $("cq-nome").textContent = c.nome;
+  const d = $("cq-diff");
+  d.textContent = c.id[0] === "F" ? "Facile" : "Difficile";
+  d.className = "diff " + c.id[0];
+  $("cq-tag").textContent = "commessa " + c.id;
+  $("cq-foto").src = "../assets/circuiti/" + c.id + ".jpg";
+  $("cq-foto").alt = "Circuito finito " + c.id;
+  $("cq-fn").textContent = data.funz;
+  $("cq-base").innerHTML = BASE_COLLAUDO.map((s,i) => `<li><span class="num">${i+1}</span><span>${s}</span></li>`).join("");
+  $("cq-coll").innerHTML = data.collaudo.map((s,i) => `<li><span class="num">${i+1}</span><span>${s}</span></li>`).join("");
+  $("cq-pos").innerHTML = data.posiz.map((s,i) => `<li><span class="num">${i+1}</span><span>${s}</span></li>`).join("");
+  $("cq-dif").innerHTML = data.difetti.map(x => `<div class="row"><span class="code">${x.c}</span><span class="txt">${x.d}</span></div>`).join("");
+  show("s-collaudo");
+}
+async function failCommessa(c){
+  const activeExecution = assemblyStore.current();
+  if (activeExecution?.commissionId === c.id) {
+    assemblyStore.end(activeExecution.executionId);
+    clearActiveSessionNotice();
+  }
+  const btn = [...todo.children].find(b => b.dataset.id === c.id);
+  if (btn){
+    const st = btn.querySelector(".stato");
+    if (st) st.outerHTML = `<span class="stato ko">KO</span>`;
+    btn.disabled = true;
+    done.prepend(btn);
+    ko++; refresh();
+  }
+  salvaEsito(c.id, "KO");
+  cronoStop(3); cronoInvia();               // fine run KO: tempi al terminale
+  if (turnoCompleto()) mostraFineTurno(); else show("s-home");
+}
+$("cq-back").addEventListener("click", e => { e.preventDefault(); openAssemblaggio(curC); });
+$("cq-ok").addEventListener("click", () => { if (curC) openCodice(curC, { authorized: true }); });
+$("cq-fail").addEventListener("click", async () => {
+  if (confirm("Chiudere la commessa " + curC.id + " come FAILATA?\nTornerai alla lista commesse e la commessa risulterà failata."))
+    await failCommessa(curC);
+});
+
+// ===== T4 Codice & stampa — codici città dal Registro Codici Città (7 cifre = CC + CAP) =====
+const COMMESSE_T4 = {
+  F1:{dest:"Bologna",  prov:"BO", cap:"40100", code:"0840100"},
+  F2:{dest:"Torino",   prov:"TO", cap:"10100", code:"4710100"},
+  F3:{dest:"Bari",     prov:"BA", cap:"70100", code:"0670100"},
+  F4:{dest:"Milano",   prov:"MI", cap:"20100", code:"3120100"},
+  F5:{dest:"Napoli",   prov:"NA", cap:"80100", code:"3380100"},
+  D1:{dest:"Firenze",  prov:"FI", cap:"50100", code:"1950100"},
+  D2:{dest:"Palermo",  prov:"PA", cap:"90100", code:"3690100"},
+  D3:{dest:"Venezia",  prov:"VE", cap:"30100", code:"4930100"},
+  D4:{dest:"Genova",   prov:"GE", cap:"16100", code:"2216100"},
+  D5:{dest:"Verona",   prov:"VR", cap:"37100", code:"5037100"}
+};
+function barcodeSVG(){
+  const W=340,H=72; let x=0,bars="";
+  while(x<W){ const w=1+Math.floor(Math.random()*4); bars+=`<rect x="${x}" y="0" width="${w}" height="${H}"/>`; x+=w+1+Math.floor(Math.random()*4); }
+  return `<svg class="bc" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" fill="#000">${bars}</svg>`;
+}
+function qrSVG(){
+  const n=21,c=5; let cells="";
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++) if(Math.random()>0.5) cells+=`<rect x="${x*c}" y="${y*c}" width="${c}" height="${c}"/>`;
+  const finder=(ox,oy)=>`<rect x="${ox*c}" y="${oy*c}" width="${7*c}" height="${7*c}" fill="#000"/><rect x="${(ox+1)*c}" y="${(oy+1)*c}" width="${5*c}" height="${5*c}" fill="#fff"/><rect x="${(ox+2)*c}" y="${(oy+2)*c}" width="${3*c}" height="${3*c}" fill="#000"/>`;
+  return `<svg viewBox="0 0 ${n*c} ${n*c}" width="72" height="72"><rect width="100%" height="100%" fill="#fff"/><g fill="#000">${cells}</g>${finder(0,0)}${finder(n-7,0)}${finder(0,n-7)}</svg>`;
+}
+function randTracking(c){ const r=String(10000000+Math.floor(Math.random()*89999999)); return `IT ${c.code} ${c.id} ${r.slice(0,4)} ${r.slice(4)}`; }
+function buildLabel(c){
+  return `
+    <div class="lbl-top">
+      <div class="lbl-tl"><div class="lbl-carrier">ELECTRONICS EXPRESS</div><div class="lbl-qr">${qrSVG()}</div></div>
+      <div class="lbl-big">${c.dest}<span>${c.cap} · ${c.code}</span></div>
+    </div>
+    <div class="lbl-from"><div class="lbl-tag">SHIP FROM</div><div class="lbl-name">Electronics SPA</div><div>Via Eudossiana</div><div>Roma</div></div>
+    <div class="lbl-to"><div class="lbl-torow"><span class="lbl-tag">SHIP TO</span><span class="lbl-city">${c.dest} · ${c.cap}</span></div>
+      <div class="lbl-name">Commessa ${c.id} — ${c.nome}</div><div>Codice destinazione: <b>${c.code}</b></div></div>
+    <div class="lbl-bc">${barcodeSVG()}<div class="lbl-bcnum">${randTracking(c)}</div></div>
+    <div class="lbl-bottom"><span>ELECTRONICS EXPRESS</span><span>0,3 KG</span></div>`;
+}
+function nowStr(){ return new Date().toLocaleString("it-IT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}); }
+
+function openCodice(c, { authorized = false } = {}){
+  faseCorrente = "T4";
+  c = resolveActiveCommission(c);
+  if (!authorized) {
+    openCollaudo(c);
+    return;
+  }
+  curC = c;
+  cronoStop(3);                             // T3 si chiude entrando nell'etichetta (T4)
+  // Destinazione casuale assegnata a questa commessa nel turno corrente (fallback per accesso diretto senza login).
+  const city = (turnoCorrente && turnoCorrente.dest && turnoCorrente.dest[c.id]) || CITTA[0];
+  const data = { id:c.id, nome:c.nome, dest:city.n, cap:city.code.slice(2), code:city.code };
+  $("cs-cod").textContent = c.id; $("cs-nome").textContent = c.nome;
+  const d = $("cs-diff"); d.textContent = c.id[0]==="F"?"Facile":"Difficile"; d.className = "diff "+c.id[0];
+  const t = nowStr(); if ($("cs-hnow")) $("cs-hnow").textContent = t; $("cs-now").textContent = t;
+  $("cs-rcod").textContent = c.id; $("cs-rnome").textContent = c.nome;
+  $("cs-foto").src = "../assets/circuiti/"+c.id+".jpg"; $("cs-foto").alt = "Circuito finito "+c.id;
+  $("cs-dest").textContent = data.dest+" · "+data.cap;
+  $("cs-code").textContent = data.code;
+  const html = buildLabel(data);
+  $("cs-label").innerHTML = html;
+  $("print-label").innerHTML = html;
+  show("s-codice");
+}
+async function closeCommessaOK(c){
+  const activeExecution = assemblyStore.current();
+  if (activeExecution?.commissionId === c.id) {
+    assemblyStore.end(activeExecution.executionId);
+    clearActiveSessionNotice();
+  }
+  const btn = [...todo.children].find(b => b.dataset.id === c.id);
+  if (btn){
+    const st = btn.querySelector(".stato");
+    if (st) st.outerHTML = `<span class="stato ok">OK</span>`;
+    btn.disabled = true; done.prepend(btn); ok++; refresh();
+  }
+  salvaEsito(c.id, "OK");
+  cronoInvia();                             // fine run OK: tempi al terminale (T3 già chiuso in openCodice)
+  if (turnoCompleto()) mostraFineTurno(); else show("s-home");
+}
+$("cs-back").addEventListener("click", e => { e.preventDefault(); renderCollaudo(curC); });
+// "Chiusura e stampa etichetta" → apre l'anteprima di stampa interna (non chiude ancora la commessa)
+$("cs-print").addEventListener("click", () => {
+  $("pp-label").innerHTML = $("cs-label").innerHTML;   // stessa etichetta mostrata sulla schermata
+  $("print-preview").showModal();
+});
+// Annulla → chiude solo l'anteprima e resta sulla schermata codice (commessa NON chiusa)
+$("pp-annulla").addEventListener("click", () => $("print-preview").close());
+// Stampa → SIMBOLICA: nessuna stampa reale, chiude la commessa (OK) e torna alla schermata principale
+$("pp-stampa").addEventListener("click", async () => {
+  $("print-preview").close();
+  await closeCommessaOK(curC);
+});
+
+// ===================== ASSISTENTE (chatbot LLM) =====================
+// Pannello laterale disponibile in ogni fase. Domande via testo o via microfono.
+// Il backend (server.py) espone /api/chat e /api/chat-audio.
+const chatMsgs = $("chat-msgs");
+let chatOccupato = false, registratore = null, pezziAudio = [];
+
+// Id di sessione di riserva: serve quando l'operatore usa la chat senza una commessa aperta.
+let sessioneRiserva = null;
+try {
+  sessioneRiserva = sessionStorage.getItem("sf-chat-sessione");
+  if (!sessioneRiserva) {
+    sessioneRiserva = crypto.randomUUID();
+    sessionStorage.setItem("sf-chat-sessione", sessioneRiserva);
+  }
+} catch { sessioneRiserva = null; }
+
+function contestoAssistente(){
+  return AssistantContext.build({
+    commessa: curC ? curC.id : null,
+    fase: faseCorrente,
+    vistaNavigatore: (faseCorrente === "T2" && asNavigator) ? asNavigator.view(performance.now()) : null,
+    numeroPassi: asSteps.length,
+    esecuzione: asExecution,
+    idRiserva: sessioneRiserva
+  });
+}
+
+function chatBenvenuto(){
+  if (chatMsgs.children.length) return;
+  const d = document.createElement("div");
+  d.className = "chat-vuoto";
+  d.textContent = "Chiedi qualcosa sul manuale: componenti, posizionamenti, polarità, collaudo. Puoi scrivere o usare il microfono.";
+  chatMsgs.appendChild(d);
+}
+function apriChat(){ $("chat-panel").hidden = false; chatBenvenuto(); $("chat-text").focus(); }
+function chiudiChat(){ $("chat-panel").hidden = true; }
+for (const b of document.querySelectorAll(".fab, .chat-fab")) b.addEventListener("click", apriChat);
+$("chat-close").addEventListener("click", chiudiChat);
+
+// Ripulisce la risposta del modello: toglie LaTeX e rende il grassetto Markdown leggibile.
+function formattaRisposta(t){
+  t = String(t)
+    .replace(/\\text\s*\{([^}]*)\}/g, "$1")
+    .replace(/\\Omega/g, "Ω").replace(/\\mu/g, "µ").replace(/\\times/g, "×")
+    .replace(/\\[,;!]/g, " ")
+    .replace(/\$([^$]*)\$/g, "$1");
+  t = t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");  // sicurezza: niente HTML dal modello
+  t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  return t;
+}
+function aggiungiMsg(testo, classi, formatta = false){
+  const vuoto = chatMsgs.querySelector(".chat-vuoto"); if (vuoto) vuoto.remove();
+  const d = document.createElement("div");
+  d.className = "msg " + classi;
+  if (formatta) d.innerHTML = formattaRisposta(testo); else d.textContent = testo;
+  chatMsgs.appendChild(d);
+  chatMsgs.scrollTop = chatMsgs.scrollHeight;
+  return d;
+}
+function abilitaInput(ok){
+  chatOccupato = !ok;
+  $("chat-send").disabled = !ok; $("chat-mic").disabled = !ok;
+}
+async function leggiRisposta(r){
+  let j = {};
+  try { j = await r.json(); } catch {}
+  return r.ok ? (j.risposta || "(risposta vuota)") : (j.detail || "Assistente non disponibile");
+}
+
+// --- Domanda testuale ---
+async function inviaTesto(testo){
+  testo = (testo || "").trim();
+  if (!testo || chatOccupato) return;
+  aggiungiMsg(testo, "user");
+  const attesa = aggiungiMsg("Sto cercando nel manuale…", "bot attesa");
+  abilitaInput(false);
+  try {
+    const { sessione, contesto } = contestoAssistente();
+    const r = await fetch("/api/chat", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ testo, sessione, contesto })
+    });
+    const testoRisposta = await leggiRisposta(r);
+    attesa.remove();
+    aggiungiMsg(testoRisposta, r.ok ? "bot" : "bot errore", r.ok);
+  } catch (e) {
+    attesa.remove();
+    aggiungiMsg("Assistente non raggiungibile: assicurati che il server sia avviato.", "bot errore");
+  }
+  abilitaInput(true);
+}
+$("chat-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const t = $("chat-text").value; $("chat-text").value = ""; $("chat-text").style.height = "auto";
+  inviaTesto(t);
+});
+$("chat-text").addEventListener("keydown", e => {          // Invio = invia, Shift+Invio = a capo
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("chat-form").requestSubmit(); }
+});
+$("chat-text").addEventListener("input", e => {            // il campo cresce col testo
+  e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+});
+
+// --- Domanda vocale: registra e converte in WAV (formato accettato dal motore) ---
+async function blobInWav(blob){
+  const ab = await blob.arrayBuffer();
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  const buf = await ac.decodeAudioData(ab);
+  const dati = buf.getChannelData(0);                       // mono
+  const rate = buf.sampleRate, n = dati.length;
+  const v = new DataView(new ArrayBuffer(44 + n * 2));
+  const scrivi = (off, s) => { for (let i = 0; i < s.length; i++) v.setUint8(off + i, s.charCodeAt(i)); };
+  scrivi(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); scrivi(8, "WAVEfmt ");
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  scrivi(36, "data"); v.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++){ const s = Math.max(-1, Math.min(1, dati[i])); v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true); }
+  ac.close();
+  return new Blob([v.buffer], { type: "audio/wav" });
+}
+async function inviaAudio(blob){
+  // Dettatura: la trascrizione finisce nel campo di testo; l'operatore la
+  // rilegge, la corregge e decide se inviarla. Il chatbot riceve solo testo.
+  abilitaInput(false);
+  const campo = $("chat-text");
+  const prima = campo.placeholder;
+  campo.placeholder = "Trascrizione in corso…";
+  try {
+    const wav = await blobInWav(blob);
+    const fd = new FormData();
+    fd.append("audio", wav, "domanda.wav");
+    const r = await fetch("/api/chat-audio", { method: "POST", body: fd });
+    let j = {}; try { j = await r.json(); } catch {}
+    if (r.ok && j.trascrizione) {
+      campo.value = j.trascrizione;
+    } else {
+      aggiungiMsg(j.detail || "Non ho capito l'audio: riprova.", "bot errore");
+    }
+  } catch (e) {
+    aggiungiMsg("Trascrizione non riuscita: " + e.message, "bot errore");
+  }
+  campo.placeholder = prima;
+  abilitaInput(true);
+  campo.focus();
+}
+$("chat-mic").addEventListener("click", async () => {
+  // Dettatura: primo click registra, secondo click ferma e trascrive nel campo.
+  if (registratore && registratore.state === "recording") { registratore.stop(); return; }
+  if (chatOccupato) return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    pezziAudio = [];
+    registratore = new MediaRecorder(stream);
+    registratore.ondataavailable = e => { if (e.data.size) pezziAudio.push(e.data); };
+    registratore.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop());
+      $("chat-mic").classList.remove("rec");
+      $("chat-text").placeholder = "Scrivi la tua domanda…";
+      if (pezziAudio.length) await inviaAudio(new Blob(pezziAudio));
+    };
+    registratore.start();
+    $("chat-mic").classList.add("rec");
+    $("chat-text").placeholder = "Sto registrando… clicca di nuovo il microfono per fermare";
+  } catch (e) {
+    aggiungiMsg("Microfono non disponibile (" + e.name + "). Serve aprire la webapp da http://localhost e dare il permesso al browser.", "bot errore");
+  }
+});
+
+if (qs === "picking"){
+  const cId = new URLSearchParams(location.search).get("c") || "F2";
+  openPicking(COMMESSE.find(x => x.id === cId) || COMMESSE[0]);
+}
+if (qs === "assemblaggio"){
+  const cId = new URLSearchParams(location.search).get("c") || "F2";
+  openAssemblaggio(COMMESSE.find(item => item.id === cId) || COMMESSE[0]);
+}
+if (qs === "collaudo"){
+  const cId = new URLSearchParams(location.search).get("c") || "F2";
+  openCollaudo(COMMESSE.find(x => x.id === cId) || COMMESSE[0]);
+}
+if (qs === "codice"){
+  const cId = new URLSearchParams(location.search).get("c") || "F2";
+  openCodice(COMMESSE.find(x => x.id === cId) || COMMESSE[0]);
+}
+
+// ===== Spia backend: /api/stato ogni 10s. Verde = server su + assistente pronto,
+// giallo = server su ma assistente KO (tipico: data/keys.txt mancante), rosso =
+// server irraggiungibile (webapp aperta come file o server spento). Solo lettura.
+async function beLed(){
+  const led = $("be-led");
+  if (!led) return;
+  let cls = "morto", nota = "backend non raggiungibile";
+  try {
+    const r = await fetch("/api/stato", { cache: "no-store" });
+    const d = await r.json();
+    if (d.pronto){ cls = "vivo"; nota = "backend attivo - " + d.modello; }
+    else { cls = "mezzo"; nota = "backend attivo, assistente KO: " + (d.errore || "?"); }
+  } catch (e) { /* rosso: il catch è già lo stato di default */ }
+  led.className = cls;
+  led.title = nota;
+}
+beLed();
+setInterval(beLed, 10000);
+</script>
+</body>
+</html>
